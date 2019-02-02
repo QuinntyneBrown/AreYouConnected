@@ -14,8 +14,6 @@ export class AuthService {
         .pipe(
             map(x => {                                    
                 localStorage.setItem("accessToken", x.accessToken);
-                localStorage.setItem("tenantId", x.tenantId);
-                localStorage.setItem("userId", x.userId);
                 localStorage.setItem("username", x.username);
             })
         );
@@ -23,8 +21,6 @@ export class AuthService {
 
     public tryToSignOut() {
         localStorage.removeItem("accessToken");
-        localStorage.removeItem("tenantId");
-        localStorage.removeItem("userId");
         localStorage.removeItem("username");
     }
 }

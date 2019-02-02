@@ -28,19 +28,17 @@ namespace RequireUserPresence.ConnectionManager
 
         public override async Task OnConnectedAsync()
         {
-            if (Context.UserIdentifier != "System" && !Users.TryAdd(Context.UserIdentifier, 0))
-                throw new UserIsAlreadyConnectedException();
+            if (!Context.User.IsInRole("System"))
+            {
+                if (!Users.TryAdd(Context.UserIdentifier, 0))
+                    throw new UserIsAlreadyConnectedException();
+                
+                await Groups.AddToGroupAsync(Context.ConnectionId, TenantId);
 
-            var tenantId = Context.User.FindFirst("TenantId")?.Value;
-
-            if (!string.IsNullOrEmpty(tenantId)) {
-
-                await Groups.AddToGroupAsync(Context.ConnectionId, Context.User.FindFirst("TenantId").Value);
-
-                await Clients.Group(tenantId).ShowUsersOnLine(Users.Where(x => x.Key.StartsWith(tenantId)).Count());
+                await Clients.Group(TenantId).ShowUsersOnLine(Users.Where(x => x.Key.StartsWith(TenantId)).Count());
+                
+                await Clients.User("System").ConnectedUsersChanged(Users.Select(x => x.Key).ToArray());
             }
-
-            await Clients.User("System").ConnectedUsersChanged(Users.Select(x => x.Key).ToArray());
 
             await base.OnConnectedAsync();
         }
@@ -50,23 +48,23 @@ namespace RequireUserPresence.ConnectionManager
             => await Clients.User(uniqueIdentifier).Result(result);
 
         public override async Task OnDisconnectedAsync(Exception exception)
-        {            
-            Users.TryRemove(Context.UserIdentifier, out _);
-
-            await Clients.All.ShowUsersOnLine(Users.Count);
-
-            var tenantId = Context.User.FindFirst("TenantId")?.Value;
-
-            if (!string.IsNullOrEmpty(tenantId))
+        {
+            if (!Context.User.IsInRole("System"))
             {
-                await Groups.RemoveFromGroupAsync(Context.ConnectionId, Context.User.FindFirst("TenantId").Value);
+                Users.TryRemove(Context.UserIdentifier, out _);
 
-                await Clients.Group(tenantId).ShowUsersOnLine(Users.Where(x => x.Key.StartsWith(tenantId)).Count());
+                await Clients.All.ShowUsersOnLine(Users.Count);
+                
+                await Groups.RemoveFromGroupAsync(Context.ConnectionId, TenantId);
+
+                await Clients.Group(TenantId).ShowUsersOnLine(Users.Where(x => x.Key.StartsWith(TenantId)).Count());
+
+                await Clients.User("System").ConnectedUsersChanged(Users.Select(x => x.Key).ToArray());
             }
-
-            await Clients.User("System").ConnectedUsersChanged(Users.Select(x => x.Key).ToArray());
 
             await base.OnDisconnectedAsync(exception);
         }        
+
+        public string TenantId { get => Context.User?.FindFirst("TenantId")?.Value; }
     }
 }
