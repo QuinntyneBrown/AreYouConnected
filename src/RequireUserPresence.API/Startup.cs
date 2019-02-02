@@ -8,7 +8,6 @@ using Microsoft.Extensions.DependencyInjection;
 using RequireUserPresence.Core;
 using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
@@ -41,14 +40,12 @@ namespace RequireUserPresence.API
             
             services.AddSwaggerGen(options =>
             {
-                options.DescribeAllEnumsAsStrings();
                 options.SwaggerDoc("v1", new Info
                 {
-                    Title = "RequireUserPresence",
+                    Title = "Require User Presence",
                     Version = "v1",
-                    Description = "RequireUserPresence REST API",
+                    Description = "Require User Presence REST API",
                 });
-                options.CustomSchemaIds(x => x.FullName);
             });
 
             services.ConfigureSwaggerGen(options => {
@@ -79,7 +76,7 @@ namespace RequireUserPresence.API
             app.UseCors("CorsPolicy");
 
             app.UseAuthentication();
-
+            
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

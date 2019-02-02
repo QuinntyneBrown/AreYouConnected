@@ -31,7 +31,7 @@ namespace RequireUserPresence.ConnectionManager
 
             services.AddSignalR().AddAzureSignalR(Configuration["SignalR:DefaultConnection:ConnectionString"]);
 
-            services.AddSingleton<IUserIdProvider, NameUserIdProvider>();
+            services.AddSingleton<IUserIdProvider, UniqueIdentifierUserIdProvider>();
 
             var jwtSecurityTokenHandler = new JwtSecurityTokenHandler
             {

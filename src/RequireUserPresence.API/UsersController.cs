@@ -1,8 +1,9 @@
-using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using RequireUserPresence.Core;
 using System;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace RequireUserPresence.API
@@ -11,10 +12,10 @@ namespace RequireUserPresence.API
     [Route("api/users")]
     public class UsersController
     {
-        private readonly ISecurityTokenFactory _securityTokenFactory;
         private readonly IConnectionManagerHubConnectionAccessor _connectionManagerHubConnectionAccessor;
         private readonly ILogger<UsersController> _logger;
-
+        private readonly ISecurityTokenFactory _securityTokenFactory;
+        
         public UsersController(
             IConnectionManagerHubConnectionAccessor connectionManagerHubConnectionAccessor,
             ILogger<UsersController> logger, 
@@ -25,27 +26,40 @@ namespace RequireUserPresence.API
             _securityTokenFactory = securityTokenFactory ?? throw new ArgumentNullException(nameof(securityTokenFactory)); 
         }
         
-        [AllowAnonymous]
         [HttpPost("token")]
-        public async Task<ActionResult<SignInResponse>> SignIn(SignInRequest request)
+        [ProducesResponseType(typeof(SignInResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> SignIn(SignInRequest request)
         {            
-            var userId = Guid.NewGuid();
+            var userId = $"{Guid.NewGuid()}";
 
             var tenantId = $"{new Guid("f0f54a28-0714-4b1a-9012-b758213bff99")}";
 
             if (_connectionManagerHubConnectionAccessor.IsConnected($"{tenantId}-{request.Username}"))
-                return new BadRequestObjectResult("User already connected!");
+                return new BadRequestObjectResult(new ProblemDetails
+                {
+                    Title = "Login Failed",
+                    Type = "https://api.requireuserpresence.com/errors/useralreadyloggedin",
+                    Detail = "User already logged in.",
+                    Status = StatusCodes.Status400BadRequest
+                });
 
             if (_connectionManagerHubConnectionAccessor.GetConnectedUsersCountByTenantId(tenantId) > 0)
-                return new BadRequestObjectResult("Licenses exhausted!");
+                return new BadRequestObjectResult(new ProblemDetails
+                {
+                    Title = "Login Failed",
+                    Type = "https://api.requireuserpresence.com/errors/connectionlimitreached",
+                    Detail = "Connections limit reached.",
+                    Status = StatusCodes.Status400BadRequest
+                });
 
-            return await Task.FromResult(new SignInResponse
+            return await Task.FromResult(new OkObjectResult(new SignInResponse
             {
                 AccessToken = _securityTokenFactory.Create(tenantId, userId, request.Username),
                 Username = request.Username,
                 UserId = userId,
                 TenantId = tenantId
-            });
+            }));
         }        
     }
 
@@ -60,6 +74,6 @@ namespace RequireUserPresence.API
         public string TenantId { get; set; }
         public string AccessToken { get; set; }
         public string Username { get; set; }
-        public Guid UserId { get; set; }
+        public string UserId { get; set; }
     }
 }

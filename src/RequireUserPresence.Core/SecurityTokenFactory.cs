@@ -9,7 +9,7 @@ namespace RequireUserPresence.Core
 {
     public interface ISecurityTokenFactory
     {
-        string Create(string tenantId, Guid userId, string uniqueName);
+        string Create(string tenantId, string userId, string uniqueName);
         string Create(string uniqueName);
     }
     public class SecurityTokenFactory : ISecurityTokenFactory
@@ -20,22 +20,23 @@ namespace RequireUserPresence.Core
                 {
                     new Claim(JwtRegisteredClaimNames.UniqueName, uniqueName),
                     new Claim(JwtRegisteredClaimNames.Sub, uniqueName),
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),                    
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                    new Claim(ClaimTypes.Role, "System"),
                     new Claim("UniqueIdentifier",uniqueName)
                 };
 
             return WriteToken(claims);
         }
 
-        public string Create(string tenantId, Guid userId, string uniqueName)
+        public string Create(string tenantId, string userId, string uniqueName)
         {            
             var claims = new List<Claim>()
                 {
                     new Claim(JwtRegisteredClaimNames.UniqueName, uniqueName),
                     new Claim(JwtRegisteredClaimNames.Sub, uniqueName),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),                    
-                    new Claim("TenantId", $"{tenantId}"),
-                    new Claim("UserId",$"{userId}"),
+                    new Claim("TenantId", tenantId),
+                    new Claim("UserId",userId),
                     new Claim("UniqueIdentifier",$"{tenantId}-{uniqueName}")
                 };
             

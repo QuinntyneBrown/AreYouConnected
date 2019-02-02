@@ -1,10 +1,11 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Logging;
+using RequireUserPresence.Core;
 using System;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.Logging;
 
 namespace RequireUserPresence.ConnectionManager
 {
@@ -26,9 +27,9 @@ namespace RequireUserPresence.ConnectionManager
             => _logger = logger;
 
         public override async Task OnConnectedAsync()
-        {            
+        {
             if (Context.UserIdentifier != "System" && !Users.TryAdd(Context.UserIdentifier, 0))
-                throw new Exception("User is already connected");
+                throw new UserIsAlreadyConnectedException();
 
             var tenantId = Context.User.FindFirst("TenantId")?.Value;
 
@@ -44,6 +45,7 @@ namespace RequireUserPresence.ConnectionManager
             await base.OnConnectedAsync();
         }
 
+        [Authorize(Roles = "System")]
         public async Task SendResult(string uniqueIdentifier, string result)
             => await Clients.User(uniqueIdentifier).Result(result);
 
