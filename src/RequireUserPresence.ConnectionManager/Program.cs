@@ -14,7 +14,8 @@ namespace RequireUserPresence.ConnectionManager
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-            .UseStartup<Startup>()
+            .UseStartup<Startup>()            
+            .UseUrls("https://localhost:44337/;http://localhost:12043/")
             .ConfigureAppConfiguration((builderContext, config) =>
             {
                 config.AddEnvironmentVariables();

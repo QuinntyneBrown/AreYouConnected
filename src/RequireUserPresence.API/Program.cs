@@ -16,6 +16,7 @@ namespace RequireUserPresence.API
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
             .UseStartup<Startup>()
+            .UseUrls("https://localhost:44309/;http://localhost:12237")            
             .ConfigureAppConfiguration((builderContext, config) =>
             {
                 config.AddEnvironmentVariables();
