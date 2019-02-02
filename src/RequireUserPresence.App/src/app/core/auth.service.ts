@@ -12,8 +12,7 @@ export class AuthService {
         return this._httpClient
         .post<any>(`${this._baseUrl}api/users/token`, options)
         .pipe(
-            map(x => {
-
+            map(x => {                                    
                 localStorage.setItem("accessToken", x.accessToken);
                 localStorage.setItem("tenantId", x.tenantId);
                 localStorage.setItem("userId", x.userId);

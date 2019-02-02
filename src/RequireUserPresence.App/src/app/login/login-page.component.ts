@@ -20,7 +20,9 @@ export class LoginPageComponent {
       username: this.form.value.username,
       password:this.form.value.password
     })
-      .subscribe(() => this._router.navigateByUrl("/"));
+      .subscribe(
+        () => this._router.navigateByUrl("/"),
+        x => alert(`${x.error.title}: ${x.error.detail}`));
   }
   
   public onDestroy: Subject<void> = new Subject<void>();
