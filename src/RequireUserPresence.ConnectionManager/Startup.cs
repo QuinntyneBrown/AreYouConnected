@@ -29,7 +29,7 @@ namespace RequireUserPresence.ConnectionManager
                 .SetIsOriginAllowed(isOriginAllowed: _ => true)
                 .AllowCredentials()));
 
-            services.AddSignalR().AddAzureSignalR("");
+            services.AddSignalR().AddAzureSignalR(Configuration["SignalR:DefaultConnection:ConnectionString"]);
 
             services.AddSingleton<IUserIdProvider, NameUserIdProvider>();
 

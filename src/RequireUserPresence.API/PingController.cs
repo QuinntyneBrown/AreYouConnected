@@ -3,8 +3,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -31,14 +29,17 @@ namespace RequireUserPresence.API.Features.Users
         }
 
         [HttpPost]
-        public async Task Post(CancellationToken cancellationToken)
+        public async Task<IActionResult> Post(CancellationToken cancellationToken)
         {            
             var uniqueIdentifier = _httpContextAccessor.HttpContext.User.FindFirst("UniqueIdentifier").Value;
 
-            if (!_connectionManagerHubConnectionAccessor.IsConnected(uniqueIdentifier)) throw new Exception();
-            
+            if (!_connectionManagerHubConnectionAccessor.IsConnected(uniqueIdentifier))
+                return new BadRequestObjectResult("Invalid Operation as user is not connected.");
+
             await _connectionManagerHubConnectionAccessor.GetHubConnection()
                 .InvokeAsync("SendResult", uniqueIdentifier, "Pong");
+
+            return new OkResult();
         }        
     }    
 }

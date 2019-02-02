@@ -9,7 +9,7 @@ namespace RequireUserPresence.Core
 {
     public interface ISecurityTokenFactory
     {
-        string Create(Guid tenantId, Guid userId, string uniqueName);
+        string Create(string tenantId, Guid userId, string uniqueName);
         string Create(string uniqueName);
     }
     public class SecurityTokenFactory : ISecurityTokenFactory
@@ -27,7 +27,7 @@ namespace RequireUserPresence.Core
             return WriteToken(claims);
         }
 
-        public string Create(Guid tenantId, Guid userId, string uniqueName)
+        public string Create(string tenantId, Guid userId, string uniqueName)
         {            
             var claims = new List<Claim>()
                 {

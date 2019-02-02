@@ -10,6 +10,7 @@ namespace RequireUserPresence.API
         HubConnection GetHubConnection();
         HubConnection HubConnection { set; }
         bool IsConnected(string uniqueIdentifier);
+        int GetConnectedUsersCountByTenantId(string tenantId);
     }
 
     public class ConnectionManagerHubConnectionAccessor : IConnectionManagerHubConnectionAccessor
@@ -22,5 +23,7 @@ namespace RequireUserPresence.API
         public HubConnection GetHubConnection() => _hubConnection;
         public bool IsConnected(string uniqueIdentifier)
             => ConnectedUserUniqueIdentifiers.Contains(uniqueIdentifier);
+        public int GetConnectedUsersCountByTenantId(string tenantId)
+            => ConnectedUserUniqueIdentifiers.Where(x => x.StartsWith(tenantId)).Count();
     }
 }

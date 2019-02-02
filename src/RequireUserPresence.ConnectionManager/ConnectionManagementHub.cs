@@ -28,7 +28,7 @@ namespace RequireUserPresence.ConnectionManager
         public override async Task OnConnectedAsync()
         {            
             if (Context.UserIdentifier != "System" && !Users.TryAdd(Context.UserIdentifier, 0))
-                throw new Exception();
+                throw new Exception("User is already connected");
 
             var tenantId = Context.User.FindFirst("TenantId")?.Value;
 
@@ -37,7 +37,6 @@ namespace RequireUserPresence.ConnectionManager
                 await Groups.AddToGroupAsync(Context.ConnectionId, Context.User.FindFirst("TenantId").Value);
 
                 await Clients.Group(tenantId).ShowUsersOnLine(Users.Where(x => x.Key.StartsWith(tenantId)).Count());
-
             }
 
             await Clients.User("System").ConnectedUsersChanged(Users.Select(x => x.Key).ToArray());

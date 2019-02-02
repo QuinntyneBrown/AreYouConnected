@@ -32,8 +32,7 @@ namespace RequireUserPresence.API
 
             _connectionManagerHubConnectionAccessor.HubConnection = connection;
 
-            await connection.StartAsync();
-            
+            await connection.StartAsync();            
         }
     }
 }

@@ -5,10 +5,10 @@ using RequireUserPresence.Core;
 using System;
 using System.Threading.Tasks;
 
-namespace RequireUserPresence.API.Features.Identity
+namespace RequireUserPresence.API
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/users")]
     public class UsersController
     {
         private readonly ISecurityTokenFactory _securityTokenFactory;
@@ -30,11 +30,15 @@ namespace RequireUserPresence.API.Features.Identity
         public async Task<ActionResult<SignInResponse>> SignIn(SignInRequest request)
         {            
             var userId = Guid.NewGuid();
-            var tenantId = new Guid("f0f54a28-0714-4b1a-9012-b758213bff99");
+
+            var tenantId = $"{new Guid("f0f54a28-0714-4b1a-9012-b758213bff99")}";
 
             if (_connectionManagerHubConnectionAccessor.IsConnected($"{tenantId}-{request.Username}"))
-                throw new Exception("User already logged In");
-            
+                return new BadRequestObjectResult("User already connected!");
+
+            if (_connectionManagerHubConnectionAccessor.GetConnectedUsersCountByTenantId(tenantId) > 0)
+                return new BadRequestObjectResult("Licenses exhausted!");
+
             return await Task.FromResult(new SignInResponse
             {
                 AccessToken = _securityTokenFactory.Create(tenantId, userId, request.Username),
@@ -53,7 +57,7 @@ namespace RequireUserPresence.API.Features.Identity
 
     public class SignInResponse
     {
-        public Guid TenantId { get; set; }
+        public string TenantId { get; set; }
         public string AccessToken { get; set; }
         public string Username { get; set; }
         public Guid UserId { get; set; }
