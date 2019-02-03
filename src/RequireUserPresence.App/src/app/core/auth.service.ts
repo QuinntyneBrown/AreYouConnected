@@ -20,7 +20,6 @@ export class AuthService {
     }
 
     public tryToSignOut() {
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("username");
+        localStorage.clear();
     }
 }

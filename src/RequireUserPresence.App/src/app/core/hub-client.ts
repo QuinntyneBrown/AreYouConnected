@@ -35,6 +35,7 @@ export class HubClient {
       });
 
       this._connection.on("result", (value) => {
+        console.log(value);
         this._ngZone.run(() => this.events.next(value));
       });
 
@@ -43,7 +44,8 @@ export class HubClient {
       });
 
       this._connection.onclose((e) => {             
-        this._router.navigateByUrl("/login");        
+        this._router.navigateByUrl("/login");     
+        localStorage.clear();   
         this.disconnect();
       });
 
@@ -57,7 +59,7 @@ export class HubClient {
     return this._connect;
   }
 
-  public usersOnline$: Subject<string> = new Subject();
+  public usersOnline$: BehaviorSubject<string> = new BehaviorSubject("");
 
   public disconnect() {
     if (this._connection) this._connection.stop();

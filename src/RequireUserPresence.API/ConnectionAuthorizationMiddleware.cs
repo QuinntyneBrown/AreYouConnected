@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Primitives;
-using System;
 using System.Threading.Tasks;
+
 namespace RequireUserPresence.API
 {
     public class ConnectionAuthorizationMiddleware
