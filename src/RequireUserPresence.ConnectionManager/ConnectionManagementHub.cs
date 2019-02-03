@@ -24,7 +24,7 @@ namespace RequireUserPresence.ConnectionManager
         private readonly ILogger<ConnectionManagementHub> _logger;
 
         public ConnectionManagementHub(ILogger<ConnectionManagementHub> logger)
-            => _logger = logger;
+            => _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
         public override async Task OnConnectedAsync()
         {

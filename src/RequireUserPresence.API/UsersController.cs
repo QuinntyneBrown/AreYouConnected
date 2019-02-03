@@ -21,7 +21,7 @@ namespace RequireUserPresence.API
             ILogger<UsersController> logger, 
             ISecurityTokenFactory securityTokenFactory)
         {
-            _connectionManagerHubConnectionAccessor = connectionManagerHubConnectionAccessor;
+            _connectionManagerHubConnectionAccessor = connectionManagerHubConnectionAccessor ?? throw new ArgumentNullException(nameof(connectionManagerHubConnectionAccessor));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _securityTokenFactory = securityTokenFactory ?? throw new ArgumentNullException(nameof(securityTokenFactory)); 
         }

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,9 +25,9 @@ namespace RequireUserPresence.API.Features.Users
             ILogger<PingController> logger            
             )
         {
-            _connectionManagerHubConnectionAccessor = connectionManagerHubConnectionAccessor;
-            _httpContextAccessor = httpContextAccessor;
-            _logger = logger;            
+            _connectionManagerHubConnectionAccessor = connectionManagerHubConnectionAccessor ?? throw new ArgumentNullException(nameof(connectionManagerHubConnectionAccessor));
+            _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         [HttpPost]
