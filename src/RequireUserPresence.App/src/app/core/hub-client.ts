@@ -38,24 +38,19 @@ export class HubClient {
         this._ngZone.run(() => this.events.next(value));
       });
 
-      this._connection.onclose((e) => {     
-        this.redirectToLogin();
+      this._connection.onclose((e) => {             
+        this._router.navigateByUrl("/login");        
         this.disconnect();
       });
 
       this._connection.start()
         .then(() => resolve())
         .catch(() => {
-          this.redirectToLogin();
           reject("Failed Connection");            
         });
     });
 
     return this._connect;
-  }
-
-  public redirectToLogin():void {
-    this._router.navigateByUrl("/login");
   }
 
   public usersOnline$: Subject<string> = new Subject();

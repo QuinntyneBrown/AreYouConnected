@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
-using RequireUserPresence.Core;
 using System;
 using System.Collections.Concurrent;
 using System.Linq;
@@ -19,19 +18,22 @@ namespace RequireUserPresence.ConnectionManager
     [Authorize(AuthenticationSchemes = "Bearer")]
     public class ConnectionManagementHub: Hub<IConnectionManagementHub> {
         
-        public static ConcurrentDictionary<string, byte> Users  = new ConcurrentDictionary<string, byte>();
+        public static ConcurrentDictionary<string, string> Users  = new ConcurrentDictionary<string, string>();
         
         private readonly ILogger<ConnectionManagementHub> _logger;
-
+        
         public ConnectionManagementHub(ILogger<ConnectionManagementHub> logger)
             => _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
         public override async Task OnConnectedAsync()
         {
             if (!Context.User.IsInRole("System"))
-            {
-                if (!Users.TryAdd(Context.UserIdentifier, 0))
-                    throw new UserIsAlreadyConnectedException();
+            {                
+                if (!Users.TryAdd(Context.UserIdentifier, Context.ConnectionId))
+                {
+                    Context.Abort();
+                    return;
+                } 
                 
                 await Groups.AddToGroupAsync(Context.ConnectionId, TenantId);
 
@@ -49,10 +51,8 @@ namespace RequireUserPresence.ConnectionManager
 
         public override async Task OnDisconnectedAsync(Exception exception)
         {
-            if (!Context.User.IsInRole("System"))
-            {
-                Users.TryRemove(Context.UserIdentifier, out _);
-
+            if (!Context.User.IsInRole("System") && TryToRemoveConnectedUser(Context.UserIdentifier, Context.ConnectionId))
+            {                                
                 await Clients.All.ShowUsersOnLine(Users.Count);
                 
                 await Groups.RemoveFromGroupAsync(Context.ConnectionId, TenantId);
@@ -63,7 +63,20 @@ namespace RequireUserPresence.ConnectionManager
             }
 
             await base.OnDisconnectedAsync(exception);
-        }        
+        } 
+        
+        public bool TryToRemoveConnectedUser(string uniqueIdentifier, string connectionId)
+        {
+            var connectedUserEntry = Users.FirstOrDefault(x => x.Key == uniqueIdentifier);
+
+            if (connectedUserEntry.Value == connectionId)
+            {
+                Users.TryRemove(Context.UserIdentifier, out _);
+                return true;
+            }
+
+            return false;
+        }
 
         public string TenantId { get => Context.User?.FindFirst("TenantId")?.Value; }
     }
