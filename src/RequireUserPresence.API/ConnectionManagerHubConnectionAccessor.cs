@@ -9,7 +9,7 @@ namespace RequireUserPresence.API
         string[] ConnectedUserUniqueIdentifiers { get; set; }
         HubConnection GetHubConnection();
         HubConnection HubConnection { set; }
-        bool IsConnected(string uniqueIdentifier);
+        bool IsConnected(string uniqueIdentifier, string connectionId = null);
         int GetConnectedUsersCountByTenantId(string tenantId);
     }
 
@@ -19,10 +19,16 @@ namespace RequireUserPresence.API
         = new string[] { };
 
         private HubConnection _hubConnection;
+
         public HubConnection HubConnection { set => _hubConnection = value; }
+
         public HubConnection GetHubConnection() => _hubConnection;
-        public bool IsConnected(string uniqueIdentifier)
-            => ConnectedUserUniqueIdentifiers.Contains(uniqueIdentifier);
+
+        public bool IsConnected(string uniqueIdentifier, string connectionId = null)
+        {
+            return ConnectedUserUniqueIdentifiers.Contains(uniqueIdentifier);
+        }
+
         public int GetConnectedUsersCountByTenantId(string tenantId)
             => ConnectedUserUniqueIdentifiers.Where(x => x.StartsWith(tenantId)).Count();
     }

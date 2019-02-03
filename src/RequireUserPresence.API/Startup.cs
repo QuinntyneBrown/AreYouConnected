@@ -76,7 +76,9 @@ namespace RequireUserPresence.API
             app.UseCors("CorsPolicy");
 
             app.UseAuthentication();
-            
+
+            app.UseMiddleware<ConnectionAuthorizationMiddleware>();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

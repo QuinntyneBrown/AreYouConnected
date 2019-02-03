@@ -13,6 +13,8 @@ namespace RequireUserPresence.ConnectionManager
         Task ShowUsersOnLine(int count);
         Task Result(string result);
         Task ConnectedUsersChanged(string[] connectedUsers);
+        Task ConnectionId(string connectionId);
+
     }
 
     [Authorize(AuthenticationSchemes = "Bearer")]
@@ -38,6 +40,8 @@ namespace RequireUserPresence.ConnectionManager
                 await Groups.AddToGroupAsync(Context.ConnectionId, TenantId);
 
                 await Clients.Group(TenantId).ShowUsersOnLine(Users.Where(x => x.Key.StartsWith(TenantId)).Count());
+
+                await Clients.Caller.ConnectionId(Context.ConnectionId);
                 
                 await Clients.User("System").ConnectedUsersChanged(Users.Select(x => x.Key).ToArray());
             }

@@ -1,10 +1,9 @@
 import { Component, Inject } from "@angular/core";
 import { Subject, Observable } from "rxjs";
 import { HubClient } from "../core/hub-client";
-import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { HttpClient } from "@angular/common/http";
 import { AuthService } from "../core/auth.service";
 import { Router } from "@angular/router";
-import { map } from "rxjs/operators";
 
 @Component({
   templateUrl: "./home-page.component.html",
@@ -22,16 +21,13 @@ export class HomePageComponent {
 
   }
 
-  ngOnInit() {
-    
+  ngOnInit() {    
     this.pong$ = this._hubClient.events.asObservable();
 
-    let headers = new HttpHeaders();
-    
-    headers.set("Authorization",`Bearer ${localStorage.getItem("accessToken")}`);
-
-    this._httpClient.post(`${this._apiUrl}api/ping`,null,{ headers }).subscribe();
-    
+    this._httpClient.post(`${this._apiUrl}api/ping`,null,{ headers: {
+      "Authorization":`Bearer ${localStorage.getItem("accessToken")}`,
+      "ConnectionId": localStorage.getItem("connectionId")
+    } }).subscribe();    
   }
 
   public get usersOnline$() { return this._hubClient.usersOnline$; }

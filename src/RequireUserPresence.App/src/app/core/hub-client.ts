@@ -38,6 +38,10 @@ export class HubClient {
         this._ngZone.run(() => this.events.next(value));
       });
 
+      this._connection.on("connectionId", (value) => {
+        localStorage.setItem("connectionId",value);
+      });
+
       this._connection.onclose((e) => {             
         this._router.navigateByUrl("/login");        
         this.disconnect();

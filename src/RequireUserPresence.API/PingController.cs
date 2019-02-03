@@ -33,11 +33,11 @@ namespace RequireUserPresence.API.Features.Users
         [HttpPost]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> Post(CancellationToken cancellationToken)
+        public async Task<IActionResult> Post([FromHeader]string connectionId, CancellationToken cancellationToken)
         {            
             var uniqueIdentifier = _httpContextAccessor.HttpContext.User.FindFirst("UniqueIdentifier").Value;
 
-            if (!_connectionManagerHubConnectionAccessor.IsConnected(uniqueIdentifier)) 
+            if (!_connectionManagerHubConnectionAccessor.IsConnected(uniqueIdentifier, connectionId)) 
                 return new BadRequestObjectResult(new ProblemDetails
                 {
                     Title = "Invalid Operation",
