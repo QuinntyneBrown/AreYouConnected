@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
+using RequireUserPresence.Core;
 using System;
 using System.Net;
 using System.Threading;
@@ -47,7 +48,10 @@ namespace RequireUserPresence.API.Features.Users
                 });
 
             await _connectionManagerHubConnectionAccessor.GetHubConnection()
-                .InvokeAsync("SendResult", uniqueIdentifier, "Pong");
+                .InvokeAsync("SendResult", new SendResultRequest {
+                    UserId = uniqueIdentifier,
+                    Result = "Pong"
+                });
 
             return new OkResult();
         }        

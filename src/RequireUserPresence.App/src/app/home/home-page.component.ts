@@ -28,13 +28,19 @@ export class HomePageComponent {
     .pipe(map(x => this.pong$.next(x)))
     .subscribe();
 
+    this._hubClient.usersOnline$
+    .pipe(map(x => this.usersOnline$.next(x)))
+    .subscribe();
+  }
+
+  public tryToPing() {
     this._httpClient.post(`${this._apiUrl}api/ping`,null,{ headers: {
       "Authorization":`Bearer ${localStorage.getItem("accessToken")}`,
       "ConnectionId": localStorage.getItem("connectionId")
-    } }).subscribe();    
+    } }).subscribe();
   }
 
-  public get usersOnline$() { return this._hubClient.usersOnline$; }
+  public usersOnline$: BehaviorSubject<string> = new BehaviorSubject("");
 
   public pong$:BehaviorSubject<string> = new BehaviorSubject("");
   

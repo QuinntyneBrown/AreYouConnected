@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace RequireUserPresence.API
@@ -6,7 +7,7 @@ namespace RequireUserPresence.API
 
     public interface IConnectionManagerHubConnectionAccessor
     {
-        string[] ConnectedUserUniqueIdentifiers { get; set; }
+        Dictionary<string,string> ConnectedUsers { get; set; }
         HubConnection GetHubConnection();
         HubConnection HubConnection { set; }
         bool IsConnected(string uniqueIdentifier, string connectionId = null);
@@ -15,8 +16,8 @@ namespace RequireUserPresence.API
 
     public class ConnectionManagerHubConnectionAccessor : IConnectionManagerHubConnectionAccessor
     {
-        public string[] ConnectedUserUniqueIdentifiers { get; set; }
-        = new string[] { };
+        public Dictionary<string, string> ConnectedUsers { get; set; }
+        = new Dictionary<string, string>();
 
         private HubConnection _hubConnection;
 
@@ -26,10 +27,15 @@ namespace RequireUserPresence.API
 
         public bool IsConnected(string uniqueIdentifier, string connectionId = null)
         {
-            return ConnectedUserUniqueIdentifiers.Contains(uniqueIdentifier);
+            ConnectedUsers.TryGetValue(uniqueIdentifier, out string value);
+
+            if (string.IsNullOrEmpty(connectionId))
+                return !string.IsNullOrEmpty(value);
+
+            return value == connectionId;
         }
 
         public int GetConnectedUsersCountByTenantId(string tenantId)
-            => ConnectedUserUniqueIdentifiers.Where(x => x.StartsWith(tenantId)).Count();
+            => ConnectedUsers.Where(x => x.Key.StartsWith(tenantId)).Count();
     }
 }

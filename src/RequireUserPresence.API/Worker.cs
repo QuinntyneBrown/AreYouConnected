@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Hosting;
 using RequireUserPresence.Core;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -27,8 +28,8 @@ namespace RequireUserPresence.API
                 })
                 .Build();
             
-            connection.On<string[]>("ConnectedUsersChanged", (connectedUsers) 
-                => _connectionManagerHubConnectionAccessor.ConnectedUserUniqueIdentifiers = connectedUsers);
+            connection.On<Dictionary<string,string>>("ConnectedUsersChanged", (connectedUsers) 
+                => _connectionManagerHubConnectionAccessor.ConnectedUsers = connectedUsers);
 
             _connectionManagerHubConnectionAccessor.HubConnection = connection;
 

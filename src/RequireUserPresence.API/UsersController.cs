@@ -44,7 +44,7 @@ namespace RequireUserPresence.API
                     Status = StatusCodes.Status400BadRequest
                 });
 
-            if (_connectionManagerHubConnectionAccessor.GetConnectedUsersCountByTenantId(tenantId) > 0)
+            if (_connectionManagerHubConnectionAccessor.GetConnectedUsersCountByTenantId(tenantId) > 1)
                 return new BadRequestObjectResult(new ProblemDetails
                 {
                     Title = "Login Failed",
