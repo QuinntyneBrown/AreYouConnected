@@ -1,10 +1,10 @@
 import { Component, Inject } from "@angular/core";
-import { Subject, Observable, BehaviorSubject } from "rxjs";
-import { HubClient } from "../core/hub-client";
+import { Subject, BehaviorSubject } from "rxjs";
 import { HttpClient } from "@angular/common/http";
-import { AuthService } from "../core/auth.service";
+import { AuthService } from "./auth.service";
 import { Router } from "@angular/router";
 import { map } from "rxjs/operators";
+import { HubClient } from "./hub-client";
 
 @Component({
   templateUrl: "./home-page.component.html",

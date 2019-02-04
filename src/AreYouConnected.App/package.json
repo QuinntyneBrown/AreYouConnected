@@ -7,9 +7,7 @@
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e",
-    "start:api": "dotnet run watch --project ..\\..\\SignalrServiceTest.API",
-    "start:all": "concurrently --kill-others \"npm run start:api\" \"npm run start\""
+    "e2e": "ng e2e"
   },
   "private": true,
   "dependencies": {

@@ -1,9 +1,9 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { HomePageComponent } from './home/home-page.component';
-import { LoginPageComponent } from './login/login-page.component';
-import { AuthGuard } from './core/auth-guard';
-import { HubClientGuard } from './core/hub-client-guard';
+import { HomePageComponent } from './home-page.component';
+import { LoginPageComponent } from './login-page.component';
+import { HubClientGuard } from './hub-client-guard';
+import { AuthGuard } from './auth-guard';
 
 const routes: Routes = [
   {
