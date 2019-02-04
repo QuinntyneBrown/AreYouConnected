@@ -28,7 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\RequireUserPresence.Core\RequireUserPresence.Core.csproj" />
+    <ProjectReference Include="..\AreYouConnected.Core\AreYouConnected.Core.csproj" />
   </ItemGroup>
 
 </Project>

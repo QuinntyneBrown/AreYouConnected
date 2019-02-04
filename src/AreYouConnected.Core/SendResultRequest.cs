@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace RequireUserPresence.Core
+namespace AreYouConnected.Core
 {
     public class SendResultRequest
     {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace RequireUserPresence.API
+namespace AreYouConnected.Api
 {
 
     public interface IConnectionManagerHubConnectionAccessor

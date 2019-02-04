@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Primitives;
 using System.Threading.Tasks;
 
-namespace RequireUserPresence.API
+namespace AreYouConnected.Api
 {
     public class ConnectionAuthorizationMiddleware
     {

@@ -1,12 +1,12 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using RequireUserPresence.Core;
+using AreYouConnected.Core;
 using System;
 using System.Net;
 using System.Threading.Tasks;
 
-namespace RequireUserPresence.API
+namespace AreYouConnected.Api
 {
     [ApiController]
     [Route("api/users")]
@@ -39,7 +39,7 @@ namespace RequireUserPresence.API
                 return new BadRequestObjectResult(new ProblemDetails
                 {
                     Title = "Login Failed",
-                    Type = "https://api.requireuserpresence.com/errors/useralreadyloggedin",
+                    Type = "https://api.AreYouConnected.com/errors/useralreadyloggedin",
                     Detail = "User already logged in.",
                     Status = StatusCodes.Status400BadRequest
                 });
@@ -48,7 +48,7 @@ namespace RequireUserPresence.API
                 return new BadRequestObjectResult(new ProblemDetails
                 {
                     Title = "Login Failed",
-                    Type = "https://api.requireuserpresence.com/errors/connectionlimitreached",
+                    Type = "https://api.AreYouConnected.com/errors/connectionlimitreached",
                     Detail = "Connections limit reached.",
                     Status = StatusCodes.Status400BadRequest
                 });

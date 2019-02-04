@@ -5,14 +5,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using RequireUserPresence.Core;
+using AreYouConnected.Core;
 using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 
-namespace RequireUserPresence.API
+namespace AreYouConnected.Api
 {
     public class Startup
     {
@@ -42,9 +42,9 @@ namespace RequireUserPresence.API
             {
                 options.SwaggerDoc("v1", new Info
                 {
-                    Title = "Require User Presence",
+                    Title = "Are You Connected",
                     Version = "v1",
-                    Description = "Require User Presence REST API",
+                    Description = "Are You Connected REST API",
                 });
             });
 
@@ -92,7 +92,7 @@ namespace RequireUserPresence.API
 
             app.UseSwaggerUI(options =>
             {
-                options.SwaggerEndpoint("/swagger/v1/swagger.json", "RequireUserPresence API");
+                options.SwaggerEndpoint("/swagger/v1/swagger.json", "AreYouConnected API");
                 options.RoutePrefix = string.Empty;
             });
             

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Serilog;
 
-namespace RequireUserPresence.ConnectionManager
+namespace AreYouConnected.ConnectionManager
 {
     public class Program
     {

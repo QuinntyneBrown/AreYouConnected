@@ -1,14 +1,14 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
-using RequireUserPresence.Core;
+using AreYouConnected.Core;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace RequireUserPresence.ConnectionManager
+namespace AreYouConnected.ConnectionManager
 {
     public interface IConnectionManagementHub
     {

@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Hosting;
-using RequireUserPresence.Core;
+using AreYouConnected.Core;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace RequireUserPresence.API
+namespace AreYouConnected.Api
 {
     public class Worker: BackgroundService
     {

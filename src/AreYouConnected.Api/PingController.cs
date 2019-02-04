@@ -3,13 +3,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
-using RequireUserPresence.Core;
+using AreYouConnected.Core;
 using System;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace RequireUserPresence.API.Features.Users
+namespace AreYouConnected.Api.Features.Users
 {
     [Authorize]
     [ApiController]
@@ -42,7 +42,7 @@ namespace RequireUserPresence.API.Features.Users
                 return new BadRequestObjectResult(new ProblemDetails
                 {
                     Title = "Invalid Operation",
-                    Type = "https://api.requireuserpresence.com/errors/invalidoperation",
+                    Type = "https://api.AreYouConnected.com/errors/invalidoperation",
                     Detail = "Invalid Operation as user is not connected.",
                     Status = (int)HttpStatusCode.BadRequest
                 });

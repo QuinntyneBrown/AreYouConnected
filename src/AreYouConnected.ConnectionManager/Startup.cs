@@ -6,12 +6,12 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Primitives;
-using RequireUserPresence.Core;
+using AreYouConnected.Core;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Threading.Tasks;
 
-namespace RequireUserPresence.ConnectionManager
+namespace AreYouConnected.ConnectionManager
 {
     public class Startup
     {

@@ -3,7 +3,7 @@ using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 
-namespace RequireUserPresence.Core
+namespace AreYouConnected.Core
 {
     public class TokenValidationParametersFactory
     {

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 
-namespace RequireUserPresence.ConnectionManager
+namespace AreYouConnected.ConnectionManager
 {
     public class UniqueIdentifierUserIdProvider : IUserIdProvider
     {
