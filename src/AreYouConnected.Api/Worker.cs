@@ -27,13 +27,21 @@ namespace AreYouConnected.Api
                     options.AccessTokenProvider = () => Task.FromResult(_securityTokenFactory.Create("System"));
                 })
                 .Build();
-            
-            connection.On<Dictionary<string,string>>("ConnectedUsersChanged", (connectedUsers) 
-                => _connectionManagerHubConnectionAccessor.ConnectedUsers = connectedUsers);
 
+            await connection.StartAsync();
+            
             _connectionManagerHubConnectionAccessor.HubConnection = connection;
 
-            await connection.StartAsync();            
+            var channel = await connection
+                .StreamAsChannelAsync<Dictionary<string,string>>("GetConnectedUsers", stoppingToken);
+
+            while (await channel.WaitToReadAsync())
+            {
+                while (channel.TryRead(out var connectedUsers))
+                {
+                    _connectionManagerHubConnectionAccessor.ConnectedUsers = connectedUsers;
+                }
+            }
         }
     }
 }

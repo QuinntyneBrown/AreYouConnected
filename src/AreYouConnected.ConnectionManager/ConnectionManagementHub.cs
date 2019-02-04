@@ -1,11 +1,13 @@
+using AreYouConnected.Core;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
-using AreYouConnected.Core;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Subjects;
+using System.Threading.Channels;
 using System.Threading.Tasks;
 
 namespace AreYouConnected.ConnectionManager
@@ -24,12 +26,15 @@ namespace AreYouConnected.ConnectionManager
         public static ConcurrentDictionary<string, string> Users  = new ConcurrentDictionary<string, string>();
         
         private readonly ILogger<ConnectionManagementHub> _logger;
+
+        public static BehaviorSubject<Dictionary<string,string>> Subject 
+            = new BehaviorSubject<Dictionary<string, string>>(Users.ToDictionary(kvp => kvp.Key, kvp => kvp.Value));
         
         public ConnectionManagementHub(ILogger<ConnectionManagementHub> logger)
             => _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
         public override async Task OnConnectedAsync()
-        {
+        {            
             if (!Context.User.IsInRole("System"))
             {                
                 if (!Users.TryAdd(Context.UserIdentifier, Context.ConnectionId))
@@ -43,11 +48,23 @@ namespace AreYouConnected.ConnectionManager
                 await Clients.Group(TenantId).ShowUsersOnLine(Users.Where(x => x.Key.StartsWith(TenantId)).Count());
 
                 await Clients.Caller.ConnectionId(Context.ConnectionId);
-                
-                await Clients.User("System").ConnectedUsersChanged(Users.ToDictionary(kvp => kvp.Key, kvp => kvp.Value));
+
+                Subject.OnNext(Users.ToDictionary(kvp => kvp.Key, kvp => kvp.Value));                
             }
 
             await base.OnConnectedAsync();
+        }
+
+        [Authorize(Roles = "System")]
+        public ChannelReader<Dictionary<string, string>> GetConnectedUsers()
+        {
+            var channel = Channel.CreateUnbounded<Dictionary<string,string>>();
+
+            var disposable = Subject.Subscribe(x => channel.Writer.WriteAsync(x));
+
+            channel.Reader.Completion.ContinueWith(task => disposable.Dispose());
+
+            return channel.Reader;            
         }
 
         [Authorize(Roles = "System")]
@@ -56,6 +73,8 @@ namespace AreYouConnected.ConnectionManager
 
         public override async Task OnDisconnectedAsync(Exception exception)
         {
+            await base.OnDisconnectedAsync(exception);
+
             if (!Context.User.IsInRole("System") && TryToRemoveConnectedUser(Context.UserIdentifier, Context.ConnectionId))
             {                                
                 await Clients.All.ShowUsersOnLine(Users.Count);
@@ -64,10 +83,8 @@ namespace AreYouConnected.ConnectionManager
 
                 await Clients.Group(TenantId).ShowUsersOnLine(Users.Where(x => x.Key.StartsWith(TenantId)).Count());
 
-                await Clients.User("System").ConnectedUsersChanged(Users.ToDictionary(kvp => kvp.Key, kvp => kvp.Value));
-            }
-
-            await base.OnDisconnectedAsync(exception);
+                Subject.OnNext(Users.ToDictionary(kvp => kvp.Key, kvp => kvp.Value));
+            }            
         } 
         
         public bool TryToRemoveConnectedUser(string uniqueIdentifier, string connectionId)

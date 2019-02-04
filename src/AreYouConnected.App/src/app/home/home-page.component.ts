@@ -31,6 +31,8 @@ export class HomePageComponent {
     this._hubClient.usersOnline$
     .pipe(map(x => this.usersOnline$.next(x)))
     .subscribe();
+
+    this.tryToPing();
   }
 
   public tryToPing() {
