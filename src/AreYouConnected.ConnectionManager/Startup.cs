@@ -1,15 +1,13 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using AreYouConnected.Core;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Primitives;
-using AreYouConnected.Core;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Threading.Tasks;
 
 namespace AreYouConnected.ConnectionManager
 {
@@ -47,21 +45,9 @@ namespace AreYouConnected.ConnectionManager
                     options.SecurityTokenValidators.Clear();
                     options.SecurityTokenValidators.Add(jwtSecurityTokenHandler);
                     options.TokenValidationParameters = TokenValidationParametersFactory.Create();
-                    options.Events = new JwtBearerEvents
-                    {
-                        OnMessageReceived = context =>
-                        {
-                            context.Request.Query.TryGetValue("access_token", out StringValues token);
-
-                            if (!string.IsNullOrEmpty(token))
-                                context.Token = token;
-
-                            return Task.CompletedTask;
-                        }
-                    };
                 });
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
 

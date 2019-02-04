@@ -34,8 +34,7 @@ export class HubClient {
         this._ngZone.run(() => this.usersOnline$.next(value));
       });
 
-      this._connection.on("result", (value) => {
-        console.log(value);
+      this._connection.on("result", (value) => {        
         this._ngZone.run(() => this.events.next(value));
       });
 
