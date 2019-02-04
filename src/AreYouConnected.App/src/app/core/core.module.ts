@@ -5,7 +5,6 @@ import { AuthService } from "./auth.service";
 import { HubClient } from "./hub-client";
 import { HubClientGuard } from "./hub-client-guard";
 import { HttpClientModule, HTTP_INTERCEPTORS } from "@angular/common/http";
-import { OAuthInterceptor } from "./oauth.interceptor";
 
 @NgModule({
     imports: [
@@ -13,11 +12,6 @@ import { OAuthInterceptor } from "./oauth.interceptor";
         HttpClientModule
     ],
     providers:[
-        {
-            provide: HTTP_INTERCEPTORS,
-            useClass: OAuthInterceptor,
-            multi: true
-        },
         AuthGuard,
         AuthService,
         HubClient,
