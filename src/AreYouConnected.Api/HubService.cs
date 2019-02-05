@@ -7,16 +7,16 @@ namespace AreYouConnected.Api
 
     public interface IHubService
     {
-        Dictionary<string,string> ConnectedUsers { get; set; }
+        Dictionary<string,string> Connections { get; set; }
         HubConnection GetHubConnection();
         HubConnection HubConnection { set; }
         bool IsConnected(string uniqueIdentifier, string connectionId = null);
-        int GetConnectedUsersCountByTenantId(string tenantId);
+        int GetConnectionsCount(string tenantId);
     }
 
     public class HubService : IHubService
     {
-        public Dictionary<string, string> ConnectedUsers { get; set; }
+        public Dictionary<string, string> Connections { get; set; }
         = new Dictionary<string, string>();
 
         private HubConnection _hubConnection;
@@ -27,7 +27,7 @@ namespace AreYouConnected.Api
 
         public bool IsConnected(string uniqueIdentifier, string connectionId = null)
         {
-            ConnectedUsers.TryGetValue(uniqueIdentifier, out string value);
+            Connections.TryGetValue(uniqueIdentifier, out string value);
 
             if (string.IsNullOrEmpty(connectionId))
                 return !string.IsNullOrEmpty(value);
@@ -35,7 +35,7 @@ namespace AreYouConnected.Api
             return value == connectionId;
         }
 
-        public int GetConnectedUsersCountByTenantId(string tenantId)
-            => ConnectedUsers.Where(x => x.Key.StartsWith(tenantId)).Count();
+        public int GetConnectionsCount(string tenantId)
+            => Connections.Where(x => x.Key.StartsWith(tenantId)).Count();
     }
 }

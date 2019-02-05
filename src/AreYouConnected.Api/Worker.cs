@@ -37,9 +37,9 @@ namespace AreYouConnected.Api
 
             while (await channel.WaitToReadAsync())
             {
-                while (channel.TryRead(out var connectedUsers))
+                while (channel.TryRead(out var connections))
                 {
-                    _hubService.ConnectedUsers = connectedUsers;
+                    _hubService.Connections = connections;
                 }
             }
         }
