@@ -12,16 +12,16 @@ namespace AreYouConnected.Api
     [Route("api/users")]
     public class UsersController
     {
-        private readonly IConnectionManagerHubConnectionAccessor _connectionManagerHubConnectionAccessor;
+        private readonly IHubService _hubService;
         private readonly ILogger<UsersController> _logger;
         private readonly ISecurityTokenFactory _securityTokenFactory;
         
         public UsersController(
-            IConnectionManagerHubConnectionAccessor connectionManagerHubConnectionAccessor,
+            IHubService hubService,
             ILogger<UsersController> logger, 
             ISecurityTokenFactory securityTokenFactory)
         {
-            _connectionManagerHubConnectionAccessor = connectionManagerHubConnectionAccessor ?? throw new ArgumentNullException(nameof(connectionManagerHubConnectionAccessor));
+            _hubService = hubService ?? throw new ArgumentNullException(nameof(hubService));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _securityTokenFactory = securityTokenFactory ?? throw new ArgumentNullException(nameof(securityTokenFactory)); 
         }
@@ -35,7 +35,7 @@ namespace AreYouConnected.Api
 
             var tenantId = $"{new Guid("f0f54a28-0714-4b1a-9012-b758213bff99")}";
 
-            if (_connectionManagerHubConnectionAccessor.IsConnected($"{tenantId}-{request.Username}"))
+            if (_hubService.IsConnected($"{tenantId}-{request.Username}"))
                 return new BadRequestObjectResult(new ProblemDetails
                 {
                     Title = "Login Failed",
@@ -44,7 +44,7 @@ namespace AreYouConnected.Api
                     Status = StatusCodes.Status400BadRequest
                 });
 
-            if (_connectionManagerHubConnectionAccessor.GetConnectedUsersCountByTenantId(tenantId) > 1)
+            if (_hubService.GetConnectedUsersCountByTenantId(tenantId) > 1)
                 return new BadRequestObjectResult(new ProblemDetails
                 {
                     Title = "Login Failed",

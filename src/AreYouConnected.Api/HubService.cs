@@ -5,7 +5,7 @@ using System.Linq;
 namespace AreYouConnected.Api
 {
 
-    public interface IConnectionManagerHubConnectionAccessor
+    public interface IHubService
     {
         Dictionary<string,string> ConnectedUsers { get; set; }
         HubConnection GetHubConnection();
@@ -14,7 +14,7 @@ namespace AreYouConnected.Api
         int GetConnectedUsersCountByTenantId(string tenantId);
     }
 
-    public class ConnectionManagerHubConnectionAccessor : IConnectionManagerHubConnectionAccessor
+    public class HubService : IHubService
     {
         public Dictionary<string, string> ConnectedUsers { get; set; }
         = new Dictionary<string, string>();

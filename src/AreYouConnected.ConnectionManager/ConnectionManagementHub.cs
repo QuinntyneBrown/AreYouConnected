@@ -27,7 +27,7 @@ namespace AreYouConnected.ConnectionManager
         
         private readonly ILogger<ConnectionManagementHub> _logger;
 
-        public static BehaviorSubject<Dictionary<string,string>> Subject 
+        public static BehaviorSubject<Dictionary<string,string>> ConnectedUsersChanged 
             = new BehaviorSubject<Dictionary<string, string>>(Users.ToDictionary(kvp => kvp.Key, kvp => kvp.Value));
         
         public ConnectionManagementHub(ILogger<ConnectionManagementHub> logger)
@@ -49,7 +49,7 @@ namespace AreYouConnected.ConnectionManager
 
                 await Clients.Caller.ConnectionId(Context.ConnectionId);
 
-                Subject.OnNext(Users.ToDictionary(kvp => kvp.Key, kvp => kvp.Value));                
+                ConnectedUsersChanged.OnNext(Users.ToDictionary(kvp => kvp.Key, kvp => kvp.Value));                
             }
 
             await base.OnConnectedAsync();
@@ -60,7 +60,7 @@ namespace AreYouConnected.ConnectionManager
         {
             var channel = Channel.CreateUnbounded<Dictionary<string,string>>();
 
-            var disposable = Subject.Subscribe(x => channel.Writer.WriteAsync(x));
+            var disposable = ConnectedUsersChanged.Subscribe(x => channel.Writer.WriteAsync(x));
 
             channel.Reader.Completion.ContinueWith(task => disposable.Dispose());
 
@@ -83,7 +83,7 @@ namespace AreYouConnected.ConnectionManager
 
                 await Clients.Group(TenantId).ShowUsersOnLine(Users.Where(x => x.Key.StartsWith(TenantId)).Count());
 
-                Subject.OnNext(Users.ToDictionary(kvp => kvp.Key, kvp => kvp.Value));
+                ConnectedUsersChanged.OnNext(Users.ToDictionary(kvp => kvp.Key, kvp => kvp.Value));
             }            
         } 
         

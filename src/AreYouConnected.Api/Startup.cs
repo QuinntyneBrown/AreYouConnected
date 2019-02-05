@@ -24,7 +24,7 @@ namespace AreYouConnected.Api
         {
             services.AddApplicationInsightsTelemetry();
 
-            services.AddSingleton<IConnectionManagerHubConnectionAccessor, ConnectionManagerHubConnectionAccessor>();
+            services.AddSingleton<IHubService, HubService>();
 
             services.AddHostedService<Worker>();
             

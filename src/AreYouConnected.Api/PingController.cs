@@ -16,12 +16,12 @@ namespace AreYouConnected.Api.Features.Users
     [Route("api/ping")]
     public class PingController
     {
-        private readonly IConnectionManagerHubConnectionAccessor _connectionManagerHubConnectionAccessor;
+        private readonly IHubService _connectionManagerHubConnectionAccessor;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger<PingController> _logger;
                 
         public PingController(
-            IConnectionManagerHubConnectionAccessor connectionManagerHubConnectionAccessor,
+            IHubService connectionManagerHubConnectionAccessor,
             IHttpContextAccessor httpContextAccessor,
             ILogger<PingController> logger            
             )

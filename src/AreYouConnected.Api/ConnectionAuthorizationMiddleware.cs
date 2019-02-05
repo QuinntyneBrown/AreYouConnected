@@ -15,7 +15,7 @@ namespace AreYouConnected.Api
 
         public async Task Invoke(HttpContext httpContext)
         {
-            var connectionManagerHubConnectionAccessor = httpContext.RequestServices.GetService<IConnectionManagerHubConnectionAccessor>();
+            var hubService = httpContext.RequestServices.GetService<IHubService>();
 
             var identity = httpContext.User.Identity;
             
@@ -25,7 +25,7 @@ namespace AreYouConnected.Api
 
                 httpContext.Request.Headers.TryGetValue("ConnectionId", out StringValues connectionId);
 
-                if (connectionManagerHubConnectionAccessor.IsConnected(uniqueIdentifier, connectionId))
+                if (hubService.IsConnected(uniqueIdentifier, connectionId))
                 {
                     await _next.Invoke(httpContext);
                 }

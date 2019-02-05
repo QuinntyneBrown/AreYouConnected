@@ -9,11 +9,11 @@ namespace AreYouConnected.Api
 {
     public class Worker: BackgroundService
     {
-        private readonly IConnectionManagerHubConnectionAccessor _connectionManagerHubConnectionAccessor;
+        private readonly IHubService _connectionManagerHubConnectionAccessor;
         private readonly ISecurityTokenFactory _securityTokenFactory;
 
         public Worker(
-            IConnectionManagerHubConnectionAccessor connectionManagerHubConnectionAccessor,
+            IHubService connectionManagerHubConnectionAccessor,
             ISecurityTokenFactory securityTokenFactory)
         {
             _connectionManagerHubConnectionAccessor = connectionManagerHubConnectionAccessor;
