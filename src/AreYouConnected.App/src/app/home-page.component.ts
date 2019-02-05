@@ -1,4 +1,4 @@
-import { Component, Inject } from "@angular/core";
+import { Component, Inject, AfterViewInit } from "@angular/core";
 import { Subject, BehaviorSubject } from "rxjs";
 import { HttpClient } from "@angular/common/http";
 import { AuthService } from "./auth.service";
@@ -30,9 +30,7 @@ export class HomePageComponent {
 
     this._hubClient.usersOnline$
     .pipe(map(x => this.usersOnline$.next(x)))
-    .subscribe();
-
-    this.tryToPing();
+    .subscribe();    
   }
 
   public tryToPing() {
