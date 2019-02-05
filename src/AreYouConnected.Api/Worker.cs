@@ -9,14 +9,14 @@ namespace AreYouConnected.Api
 {
     public class Worker: BackgroundService
     {
-        private readonly IHubService _connectionManagerHubConnectionAccessor;
+        private readonly IHubService _hubService;
         private readonly ISecurityTokenFactory _securityTokenFactory;
 
         public Worker(
-            IHubService connectionManagerHubConnectionAccessor,
+            IHubService hubService,
             ISecurityTokenFactory securityTokenFactory)
         {
-            _connectionManagerHubConnectionAccessor = connectionManagerHubConnectionAccessor;
+            _hubService = hubService;
             _securityTokenFactory = securityTokenFactory;
         }
 
@@ -30,7 +30,7 @@ namespace AreYouConnected.Api
 
             await connection.StartAsync();
             
-            _connectionManagerHubConnectionAccessor.HubConnection = connection;
+            _hubService.HubConnection = connection;
 
             var channel = await connection
                 .StreamAsChannelAsync<Dictionary<string,string>>("GetConnectedUsers", stoppingToken);
@@ -39,7 +39,7 @@ namespace AreYouConnected.Api
             {
                 while (channel.TryRead(out var connectedUsers))
                 {
-                    _connectionManagerHubConnectionAccessor.ConnectedUsers = connectedUsers;
+                    _hubService.ConnectedUsers = connectedUsers;
                 }
             }
         }

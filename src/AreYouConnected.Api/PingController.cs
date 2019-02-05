@@ -16,17 +16,17 @@ namespace AreYouConnected.Api.Features.Users
     [Route("api/ping")]
     public class PingController
     {
-        private readonly IHubService _connectionManagerHubConnectionAccessor;
+        private readonly IHubService _hubService;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger<PingController> _logger;
                 
         public PingController(
-            IHubService connectionManagerHubConnectionAccessor,
+            IHubService hubService,
             IHttpContextAccessor httpContextAccessor,
             ILogger<PingController> logger            
             )
         {
-            _connectionManagerHubConnectionAccessor = connectionManagerHubConnectionAccessor ?? throw new ArgumentNullException(nameof(connectionManagerHubConnectionAccessor));
+            _hubService = hubService ?? throw new ArgumentNullException(nameof(hubService));
             _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
@@ -38,7 +38,7 @@ namespace AreYouConnected.Api.Features.Users
         {            
             var uniqueIdentifier = _httpContextAccessor.HttpContext.User.FindFirst("UniqueIdentifier").Value;
 
-            if (!_connectionManagerHubConnectionAccessor.IsConnected(uniqueIdentifier, connectionId)) 
+            if (!_hubService.IsConnected(uniqueIdentifier, connectionId)) 
                 return new BadRequestObjectResult(new ProblemDetails
                 {
                     Title = "Invalid Operation",
@@ -47,7 +47,7 @@ namespace AreYouConnected.Api.Features.Users
                     Status = (int)HttpStatusCode.BadRequest
                 });
 
-            await _connectionManagerHubConnectionAccessor.GetHubConnection()
+            await _hubService.GetHubConnection()
                 .InvokeAsync("SendResult", new SendResultRequest {
                     UserId = uniqueIdentifier,
                     Result = "Pong"
