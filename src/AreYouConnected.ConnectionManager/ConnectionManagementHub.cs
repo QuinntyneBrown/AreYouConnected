@@ -56,7 +56,7 @@ namespace AreYouConnected.ConnectionManager
         }
 
         [Authorize(Roles = "System")]
-        public ChannelReader<Dictionary<string, string>> GetConnectedUsers()
+        public ChannelReader<Dictionary<string, string>> GetConnections()
         {
             var channel = Channel.CreateUnbounded<Dictionary<string,string>>();
 
@@ -101,5 +101,11 @@ namespace AreYouConnected.ConnectionManager
         }
 
         public string TenantId { get => Context.User?.FindFirst("TenantId")?.Value; }
+    }
+
+    public class UniqueIdentifierUserIdProvider : IUserIdProvider
+    {
+        public string GetUserId(HubConnectionContext connection)
+            => connection.User.FindFirst("UniqueIdentifier").Value;
     }
 }

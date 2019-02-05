@@ -33,7 +33,7 @@ namespace AreYouConnected.Api
             _hubService.HubConnection = connection;
 
             var channel = await connection
-                .StreamAsChannelAsync<Dictionary<string,string>>("GetConnectedUsers", stoppingToken);
+                .StreamAsChannelAsync<Dictionary<string,string>>("GetConnections", stoppingToken);
 
             while (await channel.WaitToReadAsync())
             {
