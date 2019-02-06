@@ -1,13 +1,12 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 
 namespace AreYouConnected.Api
 {
-
     public interface IHubService
     {
-        Dictionary<string,string> Connections { get; set; }
+        ConcurrentDictionary<string,string> Connections { get; set; }
         HubConnection GetHubConnection();
         HubConnection HubConnection { set; }
         bool IsConnected(string uniqueIdentifier, string connectionId = null);
@@ -16,8 +15,8 @@ namespace AreYouConnected.Api
 
     public class HubService : IHubService
     {
-        public Dictionary<string, string> Connections { get; set; }
-        = new Dictionary<string, string>();
+        public ConcurrentDictionary<string, string> Connections { get; set; }
+        = new ConcurrentDictionary<string, string>();
 
         private HubConnection _hubConnection;
 

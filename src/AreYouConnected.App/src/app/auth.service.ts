@@ -10,7 +10,7 @@ export class AuthService {
 
     public tryToLogin(options: { username:string, password:string}) {
         return this._httpClient
-        .post<any>(`${this._baseUrl}api/users/token`, options)
+        .post<any>(`${this._baseUrl}api/auth/token`, options)
         .pipe(
             map(x => {                                    
                 localStorage.setItem("accessToken", x.accessToken);

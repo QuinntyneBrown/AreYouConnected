@@ -2,15 +2,16 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Primitives;
+using Newtonsoft.Json;
 using System.Threading.Tasks;
 
 namespace AreYouConnected.Api
 {
-    public class ConnectionAuthorizationMiddleware
+    public class ConnectionGuardMiddleware
     {
         private readonly RequestDelegate _next;
 
-        public ConnectionAuthorizationMiddleware(RequestDelegate next)
+        public ConnectionGuardMiddleware(RequestDelegate next)
             => _next = next;
 
         public async Task Invoke(HttpContext httpContext)
@@ -33,7 +34,7 @@ namespace AreYouConnected.Api
                 {
                     httpContext.Response.StatusCode = StatusCodes.Status401Unauthorized;
 
-                    await httpContext.Response.WriteAsync(Newtonsoft.Json.JsonConvert.SerializeObject(
+                    await httpContext.Response.WriteAsync(JsonConvert.SerializeObject(
                         new ProblemDetails {
                             Title = "Unauthorized",
                             Type = "",
@@ -41,7 +42,8 @@ namespace AreYouConnected.Api
                             Status = StatusCodes.Status401Unauthorized
                         }));
                 }
-            } else
+            }
+            else
             {
                 await _next.Invoke(httpContext);
             }            

@@ -9,16 +9,16 @@ using System.Threading.Tasks;
 namespace AreYouConnected.Api
 {
     [ApiController]
-    [Route("api/users")]
-    public class UsersController
+    [Route("api/auth")]
+    public class AuthController
     {
         private readonly IHubService _hubService;
-        private readonly ILogger<UsersController> _logger;
+        private readonly ILogger<AuthController> _logger;
         private readonly ISecurityTokenFactory _securityTokenFactory;
         
-        public UsersController(
+        public AuthController(
             IHubService hubService,
-            ILogger<UsersController> logger, 
+            ILogger<AuthController> logger, 
             ISecurityTokenFactory securityTokenFactory)
         {
             _hubService = hubService ?? throw new ArgumentNullException(nameof(hubService));
@@ -39,7 +39,7 @@ namespace AreYouConnected.Api
                 return new BadRequestObjectResult(new ProblemDetails
                 {
                     Title = "Login Failed",
-                    Type = "https://api.AreYouConnected.com/errors/useralreadyloggedin",
+                    Type = "https://api.areyouconnected.com/errors/useralreadyloggedin",
                     Detail = "User already logged in.",
                     Status = StatusCodes.Status400BadRequest
                 });
@@ -48,7 +48,7 @@ namespace AreYouConnected.Api
                 return new BadRequestObjectResult(new ProblemDetails
                 {
                     Title = "Login Failed",
-                    Type = "https://api.AreYouConnected.com/errors/connectionlimitreached",
+                    Type = "https://api.areyouconnected.com/errors/connectionlimitreached",
                     Detail = "Connections limit reached.",
                     Status = StatusCodes.Status400BadRequest
                 });

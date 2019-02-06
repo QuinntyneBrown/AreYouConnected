@@ -14,6 +14,7 @@
     <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
     <PackageReference Include="Microsoft.Azure.SignalR" Version="1.0.5" />
     <PackageReference Include="System.Reactive" Version="4.1.2" />
+    <PackageReference Include="Microsoft.ServiceFabric.Mesh.AspNetCore.Data" Version="1.0.617-beta" />
   </ItemGroup>
 
   <ItemGroup>

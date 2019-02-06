@@ -12,6 +12,7 @@ namespace AreYouConnected.Core
         string Create(string tenantId, string userId, string uniqueName);
         string Create(string uniqueName);
     }
+
     public class SecurityTokenFactory : ISecurityTokenFactory
     {
         public string Create(string uniqueName)
@@ -20,7 +21,7 @@ namespace AreYouConnected.Core
                 {
                     new Claim(JwtRegisteredClaimNames.UniqueName, uniqueName),
                     new Claim(JwtRegisteredClaimNames.Sub, uniqueName),
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                    new Claim(JwtRegisteredClaimNames.Jti, $"{Guid.NewGuid()}"),
                     new Claim(ClaimTypes.Role, "System"),
                     new Claim("UniqueIdentifier",uniqueName)
                 };
@@ -34,7 +35,7 @@ namespace AreYouConnected.Core
                 {
                     new Claim(JwtRegisteredClaimNames.UniqueName, uniqueName),
                     new Claim(JwtRegisteredClaimNames.Sub, uniqueName),
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),                    
+                    new Claim(JwtRegisteredClaimNames.Jti, $"{Guid.NewGuid()}"),                    
                     new Claim("TenantId", tenantId),
                     new Claim("UserId",userId),
                     new Claim("UniqueIdentifier",$"{tenantId}-{uniqueName}")
@@ -48,7 +49,7 @@ namespace AreYouConnected.Core
             var now = DateTime.UtcNow;
             var nowDateTimeOffset = new DateTimeOffset(now);
 
-            claims.Add(new Claim(JwtRegisteredClaimNames.Iat, nowDateTimeOffset.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64));
+            claims.Add(new Claim(JwtRegisteredClaimNames.Iat, $"{nowDateTimeOffset.ToUnixTimeSeconds()}", ClaimValueTypes.Integer64));
 
             var jwt = new JwtSecurityToken(
                 claims: claims,
@@ -57,6 +58,22 @@ namespace AreYouConnected.Core
                 signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.ASCII.GetBytes("UHxNtYMRYwvfpO1dS4pWLKL0M3DgOj30EbN4SoBWgfc")), SecurityAlgorithms.HmacSha256));
 
             return new JwtSecurityTokenHandler().WriteToken(jwt);
+        }
+
+        public static TokenValidationParameters CreateValidationParameters()
+        {
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes("UHxNtYMRYwvfpO1dS4pWLKL0M3DgOj30EbN4SoBWgfc")),
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                ValidateLifetime = true,
+                ClockSkew = TimeSpan.Zero,
+                NameClaimType = JwtRegisteredClaimNames.UniqueName
+            };
+
+            return tokenValidationParameters;
         }
     }
 }

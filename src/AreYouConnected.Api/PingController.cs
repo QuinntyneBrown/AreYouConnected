@@ -8,6 +8,7 @@ using System;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 
 namespace AreYouConnected.Api.Features.Users
 {
@@ -21,6 +22,7 @@ namespace AreYouConnected.Api.Features.Users
         private readonly ILogger<PingController> _logger;
                 
         public PingController(
+            IConfiguration configuration,
             IHubService hubService,
             IHttpContextAccessor httpContextAccessor,
             ILogger<PingController> logger            
@@ -42,7 +44,7 @@ namespace AreYouConnected.Api.Features.Users
                 return new BadRequestObjectResult(new ProblemDetails
                 {
                     Title = "Invalid Operation",
-                    Type = "https://api.AreYouConnected.com/errors/invalidoperation",
+                    Type = "https://api.areyouconnected.com/errors/invalidoperation",
                     Detail = "Invalid Operation as user is not connected.",
                     Status = (int)HttpStatusCode.BadRequest
                 });

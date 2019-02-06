@@ -4,6 +4,7 @@ using AreYouConnected.Core;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Collections.Concurrent;
 
 namespace AreYouConnected.Api
 {
@@ -28,18 +29,18 @@ namespace AreYouConnected.Api
                 })
                 .Build();
 
-            await connection.StartAsync();
+            await connection.StartAsync(stoppingToken);
             
             _hubService.HubConnection = connection;
 
             var channel = await connection
                 .StreamAsChannelAsync<Dictionary<string,string>>("GetConnections", stoppingToken);
 
-            while (await channel.WaitToReadAsync())
+            while (await channel.WaitToReadAsync(stoppingToken))
             {
                 while (channel.TryRead(out var connections))
                 {
-                    _hubService.Connections = connections;
+                    _hubService.Connections = new ConcurrentDictionary<string, string>(connections);
                 }
             }
         }

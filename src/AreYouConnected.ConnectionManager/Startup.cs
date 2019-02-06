@@ -6,14 +6,17 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Primitives;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Threading.Tasks;
 
 namespace AreYouConnected.ConnectionManager
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration) => Configuration = configuration;
+        public Startup(IConfiguration configuration) 
+            => Configuration = configuration;
 
         public IConfiguration Configuration { get; }
 
@@ -27,7 +30,15 @@ namespace AreYouConnected.ConnectionManager
                 .SetIsOriginAllowed(isOriginAllowed: _ => true)
                 .AllowCredentials()));
 
-            services.AddSignalR().AddAzureSignalR(Configuration["SignalR:DefaultConnection:ConnectionString"]);
+            if(Configuration["ASPNETCORE_ENVIRONMENT"] =="Development")
+            {
+                services.AddSignalR();
+            }
+            else
+            {
+                services.AddSignalR().AddAzureSignalR(Configuration["SignalR:DefaultConnection:ConnectionString"]);
+            }
+
 
             services.AddSingleton<IUserIdProvider, UniqueIdentifierUserIdProvider>();
 
@@ -44,10 +55,21 @@ namespace AreYouConnected.ConnectionManager
                     options.SaveToken = true;
                     options.SecurityTokenValidators.Clear();
                     options.SecurityTokenValidators.Add(jwtSecurityTokenHandler);
-                    options.TokenValidationParameters = TokenValidationParametersFactory.Create();
+                    options.TokenValidationParameters = SecurityTokenFactory.CreateValidationParameters();                    options.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = context =>
+                        {
+                            context.Request.Query.TryGetValue("access_token", out StringValues token);
+
+                            if (!string.IsNullOrEmpty(token))
+                                context.Token = token;
+
+                            return Task.CompletedTask;
+                        }
+                    };
                 });
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Latest);
         }
 
 
@@ -60,14 +82,15 @@ namespace AreYouConnected.ConnectionManager
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseSignalR(x => x.MapHub<ConnectionManagementHub>("/hubs/connectionManagement"));
+
             }
             else
             {
                 app.UseHsts();
+                app.UseAzureSignalR(x => x.MapHub<ConnectionManagementHub>("/hubs/connectionManagement"));
             }
-
-            app.UseAzureSignalR(x => x.MapHub<ConnectionManagementHub>("/hubs/connectionManagement"));
-            
+                
             app.UseHttpsRedirection();
             app.UseMvc();
         }

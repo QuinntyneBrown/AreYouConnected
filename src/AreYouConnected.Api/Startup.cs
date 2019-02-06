@@ -65,10 +65,10 @@ namespace AreYouConnected.Api
                     options.SaveToken = true;
                     options.SecurityTokenValidators.Clear();
                     options.SecurityTokenValidators.Add(jwtSecurityTokenHandler);
-                    options.TokenValidationParameters = TokenValidationParametersFactory.Create();
+                    options.TokenValidationParameters = SecurityTokenFactory.CreateValidationParameters();
                 });
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Latest);
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -77,7 +77,7 @@ namespace AreYouConnected.Api
 
             app.UseAuthentication();
 
-            app.UseMiddleware<ConnectionAuthorizationMiddleware>();
+            app.UseMiddleware<ConnectionGuardMiddleware>();
 
             if (env.IsDevelopment())
             {
