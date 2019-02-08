@@ -34,7 +34,9 @@ namespace AreYouConnected.ConnectionManager
         }
         
         public override async Task OnConnectedAsync()
-        {            
+        {
+            await base.OnConnectedAsync();
+
             if (!Context.User.IsInRole(Strings.System))
             {
                 var connections = await _reliableStateManager.GetOrAddAsync<IReliableDictionary<string, string>>("Connections");
@@ -61,8 +63,7 @@ namespace AreYouConnected.ConnectionManager
             else
             {
                 await Groups.AddToGroupAsync(Context.ConnectionId, Strings.System);
-            }
-            await base.OnConnectedAsync();
+            }            
         }
         
         private async Task<Dictionary<string,string>> GetConnectionsDictionary(IReliableDictionary<string, string> connections = null)
@@ -126,7 +127,6 @@ namespace AreYouConnected.ConnectionManager
                     result = true;
                 }
             }
-
             return result;
         }
 

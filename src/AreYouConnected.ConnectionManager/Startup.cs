@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Azure.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Primitives;
@@ -20,6 +21,8 @@ namespace AreYouConnected.ConnectionManager
 
         public IConfiguration Configuration { get; }
 
+        public bool UseAzureSignalR => Configuration[ServiceOptions.ConnectionStringDefaultKey] != null;
+
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddCors(options => options.AddPolicy("CorsPolicy",
@@ -30,16 +33,11 @@ namespace AreYouConnected.ConnectionManager
                 .SetIsOriginAllowed(isOriginAllowed: _ => true)
                 .AllowCredentials()));
 
-            if(Configuration["ASPNETCORE_ENVIRONMENT"] =="Development")
-            {
-                services.AddSignalR();
-            }
-            else
-            {
-                services.AddSignalR().AddAzureSignalR(Configuration["SignalR:DefaultConnection:ConnectionString"]);
-            }
-
-
+            var signalRServerBuilder = services.AddSignalR();
+           
+            if (UseAzureSignalR) 
+                signalRServerBuilder.AddAzureSignalR();
+            
             services.AddSingleton<IUserIdProvider, UniqueIdentifierUserIdProvider>();
 
             var jwtSecurityTokenHandler = new JwtSecurityTokenHandler
@@ -82,17 +80,29 @@ namespace AreYouConnected.ConnectionManager
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseSignalR(x => x.MapHub<ConnectionManagementHub>("/hubs/connectionManagement"));
-
             }
             else
             {
                 app.UseHsts();
-                app.UseAzureSignalR(x => x.MapHub<ConnectionManagementHub>("/hubs/connectionManagement"));
             }
-                
+            
             app.UseHttpsRedirection();
             app.UseMvc();
+
+            if (UseAzureSignalR)
+            {
+                app.UseAzureSignalR(routes =>
+                {
+                    routes.MapHub<ConnectionManagementHub>("/hubs/connectionManagement");
+                });
+            }
+            else
+            {
+                app.UseSignalR(routes =>
+                {
+                    routes.MapHub<ConnectionManagementHub>("/hubs/connectionManagement");
+                });
+            }
         }
     }
 }
