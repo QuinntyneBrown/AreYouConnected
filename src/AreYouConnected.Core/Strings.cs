@@ -6,5 +6,6 @@
         public static string ConnectionId = "ConnectionId";
         public static string UniqueIdentifier = "UniqueIdentitfier";
         public static string ConnectionsChanged = "ConnectionsChanged";
+        public static string TenantId = "TenantId";
     }
 }

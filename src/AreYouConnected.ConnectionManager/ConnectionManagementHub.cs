@@ -65,12 +65,12 @@ namespace AreYouConnected.ConnectionManager
             await base.OnConnectedAsync();
         }
         
-        public async Task<Dictionary<string,string>> GetConnectionsDictionary(IReliableDictionary<string, string> connections = null)
+        private async Task<Dictionary<string,string>> GetConnectionsDictionary(IReliableDictionary<string, string> connections = null)
         {
             connections = connections ?? await _reliableStateManager.GetOrAddAsync<IReliableDictionary<string, string>>("Connections");
 
             using (ITransaction tx = _reliableStateManager.CreateTransaction())
-            {
+            {                
                 var list = await connections.CreateEnumerableAsync(tx);
 
                 var enumerator = list.GetAsyncEnumerator();
@@ -78,9 +78,7 @@ namespace AreYouConnected.ConnectionManager
                 var result = new Dictionary<string, string>();
 
                 while (await enumerator.MoveNextAsync(default(CancellationToken)))
-                {
                     result.TryAdd(enumerator.Current.Key, enumerator.Current.Value);
-                }
 
                 return result;
             }
@@ -96,7 +94,7 @@ namespace AreYouConnected.ConnectionManager
 
             var reliableDictionary = await _reliableStateManager.GetOrAddAsync<IReliableDictionary<string, string>>("Connections");
 
-            if (!Context.User.IsInRole(Strings.System) && (await TryToRemoveConnectedUser(Context.UserIdentifier, Context.ConnectionId,reliableDictionary)))
+            if (!Context.User.IsInRole(Strings.System) && (await TryToRemoveConnection(Context.UserIdentifier, Context.ConnectionId,reliableDictionary)))
             {
                 var connections = await GetConnectionsDictionary(reliableDictionary);
 
@@ -113,15 +111,15 @@ namespace AreYouConnected.ConnectionManager
                 await Groups.RemoveFromGroupAsync(Context.ConnectionId, Strings.System);
         } 
         
-        public async Task<bool> TryToRemoveConnectedUser(string uniqueIdentifier, string connectionId, IReliableDictionary<string,string> connections)
+        private async Task<bool> TryToRemoveConnection(string uniqueIdentifier, string connectionId, IReliableDictionary<string,string> connections)
         {
             var result = false;
             
             using (var tx = _reliableStateManager.CreateTransaction())
             {
-                var connectionEntryId = await connections.TryGetValueAsync(tx, uniqueIdentifier);
+                var _connectionId = (await connections.TryGetValueAsync(tx, uniqueIdentifier)).Value;
 
-                if (!string.IsNullOrEmpty(connectionEntryId.Value) && connectionEntryId.Value == connectionId)
+                if (!string.IsNullOrEmpty(_connectionId) && _connectionId == connectionId)
                 {
                     await connections.TryRemoveAsync(tx, uniqueIdentifier);
                     await tx.CommitAsync();
@@ -132,12 +130,12 @@ namespace AreYouConnected.ConnectionManager
             return result;
         }
 
-        public string TenantId { get => Context.User?.FindFirst("TenantId")?.Value; }
+        public string TenantId { get => Context.User?.FindFirst(Strings.TenantId)?.Value; }
     }
 
     public class UniqueIdentifierUserIdProvider : IUserIdProvider
     {
         public string GetUserId(HubConnectionContext connection)
-            => connection.User.FindFirst("UniqueIdentifier").Value;
+            => connection.User.FindFirst(Strings.UniqueIdentifier).Value;
     }
 }
