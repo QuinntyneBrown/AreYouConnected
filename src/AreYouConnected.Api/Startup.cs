@@ -33,13 +33,12 @@ namespace AreYouConnected.Api
 
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("ActiveConnection", policy =>
-                    policy.Requirements.Add(new ActiveConnectionRequirement()));
+                options.AddPolicy("AreYouConnected", policy =>
+                    policy.Requirements.Add(new AreYouConnectedRequirement()));
             });
 
-            services.AddSingleton<IAuthorizationHandler, ActiveConnectionHandler>();
+            services.AddSingleton<IAuthorizationHandler, AreYouConnectedHandler>();
             
-
             services.AddCors(options => options.AddPolicy("CorsPolicy",
                 builder => builder
                 .WithOrigins("http://localhost:4200")

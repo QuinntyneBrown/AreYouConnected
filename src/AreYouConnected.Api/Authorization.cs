@@ -8,18 +8,18 @@ using System.Threading.Tasks;
 namespace AreYouConnected.Api
 {
 
-    public class ActiveConnectionRequirement : IAuthorizationRequirement { }
+    public class AreYouConnectedRequirement : IAuthorizationRequirement { }
 
-    public class ActiveConnectionHandler: AuthorizationHandler<ActiveConnectionRequirement>
+    public class AreYouConnectedHandler: AuthorizationHandler<AreYouConnectedRequirement>
     {
-        private readonly ILogger<ActiveConnectionRequirement> _logger;
+        private readonly ILogger<AreYouConnectedRequirement> _logger;
         private readonly IHubService _hubService;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public ActiveConnectionHandler(
+        public AreYouConnectedHandler(
             IHubService hubService,
             IHttpContextAccessor httpContextAccessor,
-            ILogger<ActiveConnectionRequirement> logger
+            ILogger<AreYouConnectedRequirement> logger
             )
         {
             _hubService = hubService;
@@ -27,7 +27,7 @@ namespace AreYouConnected.Api
             _logger = logger;
         }
       
-        protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, ActiveConnectionRequirement requirement)
+        protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, AreYouConnectedRequirement requirement)
         {
             var httpContext = _httpContextAccessor.HttpContext;
             var isSystem = context.User.IsInRole(Strings.System);
