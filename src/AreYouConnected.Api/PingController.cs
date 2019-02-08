@@ -30,7 +30,7 @@ namespace AreYouConnected.Api.Features.Users
             ILogger<PingController> logger            
             )
         {
-            _authorizationService = authorizationService;
+            _authorizationService = authorizationService ?? throw new ArgumentNullException(nameof(authorizationService));
             _hubService = hubService ?? throw new ArgumentNullException(nameof(hubService));
             _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -44,14 +44,14 @@ namespace AreYouConnected.Api.Features.Users
             var result = "Pong";
 
             // After some operation, make sure the user is still connected
-            var authorizationResult = await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, "AreYouConnected");
+            var authorizationResult = await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Strings.AreYouConnected);
 
             if (!authorizationResult.Succeeded) 
                 return new UnauthorizedObjectResult(new ProblemDetails
                 {
                     Title = "Unauthorized",
                     Type = "https://api.areyouconnected.com/errors/invalidoperation",
-                    Detail = "Invalid Operation as user is not connected.",
+                    Detail = "Unauthorized operation as user is not connected.",
                     Status = (int)HttpStatusCode.Unauthorized
                 });
 

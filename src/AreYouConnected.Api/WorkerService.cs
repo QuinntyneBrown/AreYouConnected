@@ -9,12 +9,12 @@ using System.Threading.Tasks;
 
 namespace AreYouConnected.Api
 {
-    public class Worker: BackgroundService
+    public class WorkerService: BackgroundService
     {
         private readonly IHubService _hubService;
         private readonly ISecurityTokenFactory _securityTokenFactory;
 
-        public Worker(
+        public WorkerService(
             IHubService hubService,
             ISecurityTokenFactory securityTokenFactory)
         {

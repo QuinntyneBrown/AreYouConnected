@@ -10,7 +10,7 @@ namespace AreYouConnected.Api
         HubConnection GetHubConnection();
         HubConnection HubConnection { set; }
         bool IsConnected(string uniqueIdentifier, string connectionId = null);
-        int GetConnectionsCount(string tenantId);
+        int Count(string tenantId);
     }
 
     public class HubService : IHubService
@@ -34,7 +34,7 @@ namespace AreYouConnected.Api
             return value == connectionId;
         }
 
-        public int GetConnectionsCount(string tenantId)
+        public int Count(string tenantId)
             => Connections.Where(x => x.Key.StartsWith(tenantId)).Count();
     }
 }

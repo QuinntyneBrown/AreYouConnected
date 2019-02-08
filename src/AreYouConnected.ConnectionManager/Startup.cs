@@ -25,7 +25,7 @@ namespace AreYouConnected.ConnectionManager
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCors(options => options.AddPolicy("CorsPolicy",
+            services.AddCors(options => options.AddPolicy(Strings.CorsPolicy,
                 builder => builder
                 .WithOrigins("http://localhost:4200")
                 .AllowAnyMethod()
@@ -73,7 +73,7 @@ namespace AreYouConnected.ConnectionManager
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            app.UseCors("CorsPolicy");
+            app.UseCors(Strings.CorsPolicy);
 
             app.UseAuthentication();
 

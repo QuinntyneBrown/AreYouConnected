@@ -1,19 +1,17 @@
+using AreYouConnected.Core;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using AreYouConnected.Core;
 using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using Microsoft.AspNetCore.Authorization;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Primitives;
 
 namespace AreYouConnected.Api
 {
@@ -29,17 +27,17 @@ namespace AreYouConnected.Api
 
             services.AddSingleton<IHubService, HubService>();
 
-            services.AddHostedService<Worker>();
+            services.AddHostedService<WorkerService>();
 
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("AreYouConnected", policy =>
+                options.AddPolicy(Strings.AreYouConnected, policy =>
                     policy.Requirements.Add(new AreYouConnectedRequirement()));
             });
 
             services.AddSingleton<IAuthorizationHandler, AreYouConnectedHandler>();
             
-            services.AddCors(options => options.AddPolicy("CorsPolicy",
+            services.AddCors(options => options.AddPolicy(Strings.CorsPolicy,
                 builder => builder
                 .WithOrigins("http://localhost:4200")
                 .AllowAnyMethod()
@@ -84,7 +82,7 @@ namespace AreYouConnected.Api
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            app.UseCors("CorsPolicy");
+            app.UseCors(Strings.CorsPolicy);
 
             app.UseAuthentication();
             
@@ -101,7 +99,7 @@ namespace AreYouConnected.Api
 
             app.UseSwaggerUI(options =>
             {
-                options.SwaggerEndpoint("/swagger/v1/swagger.json", "AreYouConnected API");
+                options.SwaggerEndpoint("/swagger/v1/swagger.json", "Are You Connected API");
                 options.RoutePrefix = string.Empty;
             });
             

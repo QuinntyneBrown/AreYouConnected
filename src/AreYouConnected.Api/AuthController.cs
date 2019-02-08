@@ -44,7 +44,7 @@ namespace AreYouConnected.Api
                     Status = StatusCodes.Status400BadRequest
                 });
 
-            if (_hubService.GetConnectionsCount(tenantId) > 1)
+            if (_hubService.Count(tenantId) > 1)
                 return new BadRequestObjectResult(new ProblemDetails
                 {
                     Title = "Login Failed",
