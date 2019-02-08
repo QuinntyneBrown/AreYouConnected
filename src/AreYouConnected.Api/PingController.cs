@@ -40,24 +40,26 @@ namespace AreYouConnected.Api.Features.Users
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> Post([FromHeader]string connectionId, CancellationToken cancellationToken)
-        {
+        { 
+            var result = "Pong";
+
             // After some operation, make sure the user is still connected
             var authorizationResult = await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, "AreYouConnected");
 
             if (!authorizationResult.Succeeded) 
-                return new BadRequestObjectResult(new ProblemDetails
+                return new UnauthorizedObjectResult(new ProblemDetails
                 {
-                    Title = "Invalid Operation",
+                    Title = "Unauthorized",
                     Type = "https://api.areyouconnected.com/errors/invalidoperation",
                     Detail = "Invalid Operation as user is not connected.",
-                    Status = (int)HttpStatusCode.BadRequest
+                    Status = (int)HttpStatusCode.Unauthorized
                 });
 
             // send the result via SignalR
             await _hubService.GetHubConnection()
                 .InvokeAsync("SendResult", new SendResultRequest {
                     UserId = _httpContextAccessor.HttpContext.User.FindFirst(Strings.UniqueIdentifier).Value,
-                    Result = "Pong"
+                    Result = result
                 }, cancellationToken);
 
             return new OkResult();
