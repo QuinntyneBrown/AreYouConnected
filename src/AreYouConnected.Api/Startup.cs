@@ -35,7 +35,7 @@ namespace AreYouConnected.Api
                     policy.Requirements.Add(new AreYouConnectedRequirement()));
             });
 
-            services.AddSingleton<IAuthorizationHandler, AreYouConnectedHandler>();
+            services.AddSingleton<IAuthorizationHandler, AreYouConnectedAuthorizationHandler>();
             
             services.AddCors(options => options.AddPolicy(Strings.CorsPolicy,
                 builder => builder

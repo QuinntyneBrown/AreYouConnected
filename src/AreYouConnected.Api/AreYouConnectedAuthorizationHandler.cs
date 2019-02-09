@@ -10,13 +10,13 @@ namespace AreYouConnected.Api
 
     public class AreYouConnectedRequirement : IAuthorizationRequirement { }
 
-    public class AreYouConnectedHandler: AuthorizationHandler<AreYouConnectedRequirement>
+    public class AreYouConnectedAuthorizationHandler: AuthorizationHandler<AreYouConnectedRequirement>
     {
         private readonly ILogger<AreYouConnectedRequirement> _logger;
         private readonly IHubService _hubService;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public AreYouConnectedHandler(
+        public AreYouConnectedAuthorizationHandler(
             IHubService hubService,
             IHttpContextAccessor httpContextAccessor,
             ILogger<AreYouConnectedRequirement> logger
