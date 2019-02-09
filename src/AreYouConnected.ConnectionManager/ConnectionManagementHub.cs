@@ -65,7 +65,7 @@ namespace AreYouConnected.ConnectionManager
                 await Groups.AddToGroupAsync(Context.ConnectionId, Strings.System);
             }            
         }
-        
+
         private async Task<Dictionary<string,string>> GetConnectionsDictionary(IReliableDictionary<string, string> connections = null)
         {
             connections = connections ?? await _reliableStateManager.GetOrAddAsync<IReliableDictionary<string, string>>("Connections");

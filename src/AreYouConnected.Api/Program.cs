@@ -15,8 +15,7 @@ namespace AreYouConnected.Api
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-            .UseStartup<Startup>()
-            .UseUrls("https://localhost:44309/;http://localhost:12237")            
+            .UseStartup<Startup>()           
             .ConfigureAppConfiguration((builderContext, config) =>
             {
                 config.AddEnvironmentVariables();
