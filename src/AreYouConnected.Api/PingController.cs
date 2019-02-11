@@ -1,14 +1,13 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AreYouConnected.Core;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
-using AreYouConnected.Core;
 using System;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
 
 namespace AreYouConnected.Api.Features.Users
 {
@@ -23,17 +22,16 @@ namespace AreYouConnected.Api.Features.Users
         private readonly ILogger<PingController> _logger;
                 
         public PingController(
-            IAuthorizationService authorizationService,
-            IConfiguration configuration,
+            IAuthorizationService authorizationService,            
             IHubService hubService,
             IHttpContextAccessor httpContextAccessor,
             ILogger<PingController> logger            
             )
         {
-            _authorizationService = authorizationService ?? throw new ArgumentNullException(nameof(authorizationService));
-            _hubService = hubService ?? throw new ArgumentNullException(nameof(hubService));
-            _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _authorizationService = authorizationService;
+            _hubService = hubService;
+            _httpContextAccessor = httpContextAccessor;
+            _logger = logger;
         }
 
         [HttpPost]

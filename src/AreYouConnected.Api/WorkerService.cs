@@ -18,8 +18,8 @@ namespace AreYouConnected.Api
             IHubService hubService,
             ISecurityTokenFactory securityTokenFactory)
         {
-            _hubService = hubService ?? throw new ArgumentNullException(nameof(hubService));
-            _securityTokenFactory = securityTokenFactory ?? throw new ArgumentNullException(nameof(securityTokenFactory));
+            _hubService = hubService;
+            _securityTokenFactory = securityTokenFactory;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)

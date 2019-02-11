@@ -21,9 +21,9 @@ namespace AreYouConnected.Api
             ILogger<AuthController> logger, 
             ISecurityTokenFactory securityTokenFactory)
         {
-            _hubService = hubService ?? throw new ArgumentNullException(nameof(hubService));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _securityTokenFactory = securityTokenFactory ?? throw new ArgumentNullException(nameof(securityTokenFactory)); 
+            _hubService = hubService;
+            _logger = logger;
+            _securityTokenFactory = securityTokenFactory;
         }
         
         [HttpPost("token")]

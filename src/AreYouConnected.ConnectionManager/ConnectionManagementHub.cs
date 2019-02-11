@@ -29,8 +29,8 @@ namespace AreYouConnected.ConnectionManager
         
         public ConnectionManagementHub(ILogger<ConnectionManagementHub> logger, IReliableStateManager reliableStateManager)
         {
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _reliableStateManager = reliableStateManager ?? throw new ArgumentNullException(nameof(reliableStateManager));
+            _logger = logger;
+            _reliableStateManager = reliableStateManager;
         }
         
         public override async Task OnConnectedAsync()
