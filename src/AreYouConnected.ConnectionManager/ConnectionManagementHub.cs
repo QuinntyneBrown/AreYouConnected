@@ -6,6 +6,7 @@ using Microsoft.ServiceFabric.Data;
 using Microsoft.ServiceFabric.Data.Collections;
 using System;
 using System.Collections.Generic;
+using System.Fabric;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -26,8 +27,12 @@ namespace AreYouConnected.ConnectionManager
         private readonly IReliableStateManager _reliableStateManager;
 
         private readonly ILogger<ConnectionManagementHub> _logger;
-        
-        public ConnectionManagementHub(ILogger<ConnectionManagementHub> logger, IReliableStateManager reliableStateManager)
+
+        public static List<string> ConnectedUserIds { get; set; } = new List<string>();
+
+        public ConnectionManagementHub(
+            ILogger<ConnectionManagementHub> logger, 
+            IReliableStateManager reliableStateManager)
         {
             _logger = logger;
             _reliableStateManager = reliableStateManager;
@@ -50,6 +55,8 @@ namespace AreYouConnected.ConnectionManager
                         Context.Abort();
                         return;
                     }
+
+                    ConnectedUserIds.Add(Context.UserIdentifier);
 
                     await Groups.AddToGroupAsync(Context.ConnectionId, TenantId);
 
@@ -76,12 +83,12 @@ namespace AreYouConnected.ConnectionManager
 
                 var enumerator = list.GetAsyncEnumerator();
 
-                var result = new Dictionary<string, string>();
+                var result = new List<KeyValuePair<string, string>>();
 
                 while (await enumerator.MoveNextAsync(default(CancellationToken)))
-                    result.TryAdd(enumerator.Current.Key, enumerator.Current.Value);
+                    result.Add(enumerator.Current);
 
-                return result;
+                return new Dictionary<string, string>(result);
             }
         }
 
@@ -106,6 +113,8 @@ namespace AreYouConnected.ConnectionManager
                 await Clients.Group(TenantId).ShowUsersOnLine(connections.Where(x => x.Key.StartsWith(TenantId)).Count());
 
                 await Clients.Group(Strings.System).ConnectionsChanged(connections);
+
+                ConnectedUserIds.Remove(Context.UserIdentifier);
             }            
 
             if(Context.User.IsInRole(Strings.System))
@@ -137,5 +146,5 @@ namespace AreYouConnected.ConnectionManager
     {
         public string GetUserId(HubConnectionContext connection)
             => connection.User.FindFirst(Strings.UniqueIdentifier).Value;
-    }
+    }    
 }

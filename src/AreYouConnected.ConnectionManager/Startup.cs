@@ -8,6 +8,9 @@ using Microsoft.Azure.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Primitives;
+using Microsoft.ServiceFabric.Data;
+using Microsoft.ServiceFabric.Data.Collections;
+using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Threading.Tasks;
@@ -16,8 +19,16 @@ namespace AreYouConnected.ConnectionManager
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration) 
-            => Configuration = configuration;
+        public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration;
+            
+        }
+
+        private void OnShutdown()
+        {
+
+        }
 
         public IConfiguration Configuration { get; }
 
@@ -71,8 +82,20 @@ namespace AreYouConnected.ConnectionManager
         }
 
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime appLifetime, IReliableStateManager reliableStateManager)
         {
+            appLifetime.ApplicationStopping.Register(() => {
+                var reliableDictionary = reliableStateManager.GetOrAddAsync<IReliableDictionary<string, string>>("Connections").GetAwaiter().GetResult();
+                using (ITransaction tx = reliableStateManager.CreateTransaction())
+                {
+                    foreach (var connectionUserId in ConnectionManagementHub.ConnectedUserIds)
+                        reliableDictionary.TryRemoveAsync(tx, connectionUserId).GetAwaiter().GetResult();
+
+                    tx.CommitAsync().GetAwaiter().GetResult();
+                }
+            });
+
+
             app.UseCors(Strings.CorsPolicy);
 
             app.UseAuthentication();

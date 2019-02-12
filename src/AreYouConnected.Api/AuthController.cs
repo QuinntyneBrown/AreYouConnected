@@ -26,7 +26,7 @@ namespace AreYouConnected.Api
             _securityTokenFactory = securityTokenFactory;
         }
         
-        [HttpPost("token")]
+        [HttpPost, Route("token")]
         [ProducesResponseType(typeof(SignInResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> SignIn(SignInRequest request)
