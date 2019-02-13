@@ -41,24 +41,23 @@ namespace AreYouConnected.Api
 
             _hubService.HubConnection = _connection;
 
-            await OpenSignalRConnectionAsync();
+            await StartConnectionAsync();
         }
 
-        private async Task OpenSignalRConnectionAsync()
+        private async Task StartConnectionAsync()
         {
-            var pauseBetweenFailures = TimeSpan.FromSeconds(20);
             var retryPolicy = Policy
                 .Handle<Exception>()
-                .WaitAndRetryForeverAsync(i => pauseBetweenFailures
+                .WaitAndRetryForeverAsync(i => TimeSpan.FromSeconds(20)
                 , (exception, timeSpan) =>
                 {
-                    
+                    _logger.Log(LogLevel.Error, exception.Message);
                 });
 
-            await retryPolicy.ExecuteAsync(async () => await TryOpenSignalRConnection());
+            await retryPolicy.ExecuteAsync(async () => await TryToStartConnectionAsync());
         }
         
-        private async Task<bool> TryOpenSignalRConnection()
+        private async Task<bool> TryToStartConnectionAsync()
         {
             await _connection.StartAsync();
             return true;
