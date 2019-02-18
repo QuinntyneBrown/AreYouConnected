@@ -14,7 +14,7 @@ namespace AreYouConnected.Api.Features.Users
     [Authorize(Policy = "AreYouConnected")]
     [ApiController]
     [Route("api/ping")]
-    public class PingController
+    public class PingController: ControllerBase
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly IHubService _hubService;
@@ -36,8 +36,8 @@ namespace AreYouConnected.Api.Features.Users
 
         [HttpPost]
         [ProducesResponseType((int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> Post([FromHeader]string connectionId, CancellationToken cancellationToken)
+        [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.Unauthorized)]
+        public async Task<ActionResult> Post([FromHeader]string connectionId, CancellationToken cancellationToken)
         { 
             var result = "Pong";
 
@@ -45,12 +45,12 @@ namespace AreYouConnected.Api.Features.Users
             var authorizationResult = await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Strings.AreYouConnected);
 
             if (!authorizationResult.Succeeded) 
-                return new UnauthorizedObjectResult(new ProblemDetails
+                return Unauthorized(new ProblemDetails
                 {
                     Title = "Unauthorized",
                     Type = "https://api.areyouconnected.com/errors/invalidoperation",
                     Detail = "Unauthorized operation as user is not connected.",
-                    Status = (int)HttpStatusCode.Unauthorized
+                    Status = (int)HttpStatusCode.Unauthorized,                                        
                 });
 
             // send the result via SignalR
@@ -60,7 +60,7 @@ namespace AreYouConnected.Api.Features.Users
                     Result = result
                 }, cancellationToken);
 
-            return new OkResult();
+            return Ok();
         }        
     }    
 }
