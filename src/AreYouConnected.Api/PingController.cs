@@ -18,19 +18,16 @@ namespace AreYouConnected.Api.Features.Users
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly IHubService _hubService;
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger<PingController> _logger;
                 
         public PingController(
             IAuthorizationService authorizationService,            
             IHubService hubService,
-            IHttpContextAccessor httpContextAccessor,
             ILogger<PingController> logger            
             )
         {
             _authorizationService = authorizationService;
             _hubService = hubService;
-            _httpContextAccessor = httpContextAccessor;
             _logger = logger;
         }
 
@@ -42,7 +39,7 @@ namespace AreYouConnected.Api.Features.Users
             var result = "Pong";
 
             // After some operation, make sure the user is still connected
-            var authorizationResult = await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Strings.AreYouConnected);
+            var authorizationResult = await _authorizationService.AuthorizeAsync(Request.HttpContext.User, Strings.AreYouConnected);
 
             if (!authorizationResult.Succeeded) 
                 return Unauthorized(new ProblemDetails
@@ -56,7 +53,7 @@ namespace AreYouConnected.Api.Features.Users
             // send the result via SignalR
             await _hubService.GetHubConnection()
                 .InvokeAsync("SendResult", new SendResultRequest {
-                    UserId = _httpContextAccessor.HttpContext.User.FindFirst(Strings.UniqueIdentifier).Value,
+                    UserId = Request.HttpContext.User.FindFirst(Strings.UniqueIdentifier).Value,
                     Result = result
                 }, cancellationToken);
 

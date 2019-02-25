@@ -21,13 +21,7 @@ namespace AreYouConnected.ConnectionManager
     {
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
-            
-        }
-
-        private void OnShutdown()
-        {
-
+            Configuration = configuration;            
         }
 
         public IConfiguration Configuration { get; }

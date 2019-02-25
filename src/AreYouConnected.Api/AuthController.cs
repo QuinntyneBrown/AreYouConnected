@@ -1,4 +1,5 @@
 using AreYouConnected.Core;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -26,6 +27,7 @@ namespace AreYouConnected.Api
             _securityTokenFactory = securityTokenFactory;
         }
         
+        [AllowAnonymous]
         [HttpPost, Route("token")]
         [ProducesResponseType(typeof(SignInResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.BadRequest)]

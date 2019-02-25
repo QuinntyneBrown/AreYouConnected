@@ -77,7 +77,14 @@ namespace AreYouConnected.Api
                     options.TokenValidationParameters = SecurityTokenFactory.CreateValidationParameters();
                 });
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Latest);
+            services.AddMvc(options => {
+                var policy = new AuthorizationPolicyBuilder()
+                .RequireAuthenticatedUser()
+                .AddRequirements(new AreYouConnectedRequirement())
+                .Build();
+
+                options.Filters.Add(new AuthorizeFilter(policy));
+            }).SetCompatibilityVersion(CompatibilityVersion.Latest);
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
